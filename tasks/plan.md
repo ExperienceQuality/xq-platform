@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Tasks 1–5 complete on 2026-10-14; Checkpoint 1 pending structure-validator integration.
+Approved on 2026-10-14. Tasks 1–6 complete on 2026-10-14; Checkpoint 1 awaits human approval for layout work.
 
 ## Overview
 

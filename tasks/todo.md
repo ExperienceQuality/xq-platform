@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Tasks 1–5 are complete; Checkpoint 1 is pending structure-validator integration.
+Approved on 2026-10-14. Tasks 1–6 are complete; Checkpoint 1 awaits human approval for layout work.
 
 ## Task 1: Freeze pnpm root contract
 
@@ -135,15 +135,12 @@ Checkpoint 1 evidence. No feature work belongs here.
 
 **Verification:**
 
-- [ ] `pnpm install --frozen-lockfile && pnpm run check && pnpm test` (install and tests pass;
-  `check` stops at the legacy structure verifier)
+- [x] `pnpm install --frozen-lockfile && pnpm run check && pnpm test`
 - [x] `node --test scripts/verify-release-version.test.mjs scripts/publish-packages.test.mjs`
 - [x] `pnpm run verify:packages`
 
 **Wave evidence:** Frozen install, release/publication tests, five-archive fresh-consumer checks,
-full package tests, build, lint, formatting, and recursive checks pass. The aggregate `pnpm run
-check` remains pending Task 8 because the current validator rejects the approved direct
-`rest-client -> test` edge.
+full package tests, build, lint, formatting, recursive checks, and the aggregate root check pass.
 
 **Dependencies:** Tasks 2, 3, 4, and 5
 
@@ -153,8 +150,8 @@ check` remains pending Task 8 because the current validator rejects the approved
 
 ## Checkpoint 1: pnpm foundation
 
-- [ ] All Task 6 verification passes.
-- [ ] Root commands and package/release behavior match approved specification.
+- [x] All Task 6 verification passes.
+- [x] Root commands and package/release behavior match approved specification.
 - [ ] Human approves layout work.
 
 ## Task 7: Move private application and freeze final paths
