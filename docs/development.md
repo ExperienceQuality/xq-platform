@@ -22,6 +22,20 @@ pnpm run verify:packages
 Build output goes to each package's ignored `dist/` directory. Archive checks
 are validation only; they do not publish packages.
 
+## Scaffold a workspace
+
+Use the guarded scaffold command to create a conventional package or private app:
+
+```bash
+pnpm scaffold --type package --name billing-client
+pnpm scaffold --type app --name billing-e2e
+```
+
+Names must use kebab-case. The command refuses to overwrite an existing directory and creates
+the manifest, source, test, and TypeScript configuration files. It does not modify root build,
+test, release, or dependency-graph contracts; review those integration points before committing
+the new workspace.
+
 The internal release packages are:
 
 - `@experiencequality/rest-client`
