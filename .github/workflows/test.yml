@@ -34,13 +34,16 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ inputs.ref || github.ref }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.10.0
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
-      - run: npm ci
-      - run: npm run ci:build
-      - run: npm test
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run ci:build
+      - run: pnpm test
       - name: Run Cucumber report verification
         run: node scripts/verify-cucumber-report.mjs
       - name: Upload Cucumber report
