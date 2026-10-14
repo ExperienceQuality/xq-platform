@@ -9,10 +9,6 @@
   },
   "packageManager": "pnpm@12.10.0",
   "description": "A platform-owned Vitest foundation for backend functional E2E tests.",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "scripts": {
     "build": "tsc -b",
     "clean": "tsc -b --clean",

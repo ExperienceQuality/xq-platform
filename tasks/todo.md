@@ -193,15 +193,15 @@ tests for workspace classes, dependency edges, lockfiles, cycles, and source bou
 
 **Acceptance criteria:**
 
-- [ ] Validator discovers all six child workspaces through pnpm.
-- [ ] Validator rejects wrong privacy/registry policy, forbidden edges, extra lockfiles, and source
+- [x] Validator discovers all six child workspaces through pnpm.
+- [x] Validator rejects wrong privacy/registry policy, forbidden edges, extra lockfiles, and source
   boundary violations.
-- [ ] Workspace cycles fail through pnpm policy and temporary root workspace globs are removed.
+- [x] Workspace cycles fail through pnpm policy and temporary root workspace globs are removed.
 
 **Verification:**
 
-- [ ] `node --test scripts/verify-structure.test.mjs`
-- [ ] `pnpm run verify:structure`
+- [x] `node --test scripts/verify-structure.test.mjs`
+- [x] `pnpm run verify:structure`
 
 **Dependencies:** Task 7
 
@@ -217,14 +217,14 @@ later package migrations. Do not edit package configs in this task.
 
 **Acceptance criteria:**
 
-- [ ] Shared test compiler policy owns no-emit and declaration settings.
-- [ ] Root Vitest config defines stable names and explicit includes for four simple libraries.
-- [ ] Unique facade/database/application configs remain outside root projects.
+- [x] Shared test compiler policy owns no-emit and declaration settings.
+- [x] Root Vitest config defines stable names and explicit includes for four simple libraries.
+- [x] Unique facade/database/application configs remain outside root projects.
 
 **Verification:**
 
 - [ ] TypeScript configuration parses for representative leaf and dependent packages.
-- [ ] `pnpm exec vitest --config vitest.config.ts --list` lists intended simple-library tests.
+- [x] `pnpm exec vitest list --config vitest.config.ts` lists intended simple-library tests.
 
 **Dependencies:** Task 7
 
@@ -239,14 +239,14 @@ root pnpm commands without changing workflow triggers, matrices, permissions, or
 
 **Acceptance criteria:**
 
-- [ ] Every Node job installs pnpm before dependency-cache setup.
-- [ ] Build, test, release, and publish jobs use frozen pnpm installs and root commands.
-- [ ] No workflow uses npm for repository workspace operations.
+- [x] Every Node job installs pnpm before dependency-cache setup.
+- [x] Build, test, release, and publish jobs use frozen pnpm installs and root commands.
+- [x] No workflow uses npm for repository workspace operations.
 
 **Verification:**
 
-- [ ] Workflow YAML parses.
-- [ ] `rg -n "npm (ci|run|test|publish|pack)" .github/workflows` returns no repository-operation
+- [x] Workflow YAML parses (static workflow assertions passed; `actionlint` unavailable).
+- [x] `rg -n "npm (ci|run|test|publish|pack)" .github/workflows` returns no repository-operation
   matches.
 
 **Dependencies:** Task 7
@@ -263,13 +263,13 @@ approved pnpm commands and `apps/` layout.
 
 **Acceptance criteria:**
 
-- [ ] Maintainer command blocks use existing pnpm root scripts.
-- [ ] Layout and release text references final paths and lockfile.
-- [ ] Public behavior, versions, registry, and release policy remain unchanged.
+- [x] Maintainer command blocks use existing pnpm root scripts.
+- [x] Layout and release text references final paths and lockfile.
+- [x] Public behavior, versions, registry, and release policy remain unchanged.
 
 **Verification:**
 
-- [ ] Command/path search across owned documents returns no stale repository command or path.
+- [x] Command/path search across owned documents returns no stale repository command or path.
 
 **Dependencies:** Task 7
 

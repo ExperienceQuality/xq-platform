@@ -11,7 +11,7 @@ import { defineConfig } from '@experiencequality/test/vitest/config';
 export default defineConfig({
   application: { command: 'npm run start', url: 'http://127.0.0.1:4000/health' },
   mock: { host: '127.0.0.1' },
-  databases: { app: { urlEnv: 'DATABASE_URL', defaultSchema: 'public' } }
+  databases: { app: { urlEnv: 'DATABASE_URL', defaultSchema: 'public' } },
 });
 ```
 
@@ -21,10 +21,11 @@ import { expect, test } from '@experiencequality/test/vitest';
 test('creates a routine', async ({ kit }) => {
   const interaction = await kit.stub.addInteraction({
     request: { method: 'GET', path: '/users/user-1' },
-    response: { status: 200, body: { id: 'user-1' } }
+    response: { status: 200, body: { id: 'user-1' } },
   });
 
-  await kit.rest.post('/routines')
+  await kit.rest
+    .post('/routines')
     .withJson({ name: 'Strength A', userId: 'user-1' })
     .expectStatus(201);
 
@@ -86,7 +87,7 @@ Clients own only interactions they add. Other IDs cannot be read or removed. Nam
 ```ts
 const id = await kit.stub.addInteraction({
   request: { method: 'GET', path: '/health' },
-  response: { status: 200, body: { ok: true } }
+  response: { status: 200, body: { ok: true } },
 });
 await kit.rest.get('/health').expectStatus(200);
 await kit.stub.removeInteraction(id);
@@ -107,8 +108,11 @@ Each descriptor first reads the environment variable named by its `urlEnv`; `DAT
 ```ts
 const db = createDatabaseClients({ app: { urlEnv: 'APP_DATABASE_URL', defaultSchema: 'public' } });
 try {
-  const rows = await db.get<{ routines: { id: string } }>('app')
-    .selectFrom('routines').select('id').execute();
+  const rows = await db
+    .get<{ routines: { id: string } }>('app')
+    .selectFrom('routines')
+    .select('id')
+    .execute();
 } finally {
   await destroyDatabaseClients(db);
 }
@@ -139,8 +143,8 @@ Configure feature paths and step imports through `defineCucumberConfig({ paths, 
 ## Verification
 
 ```bash
-npm run check
-npm test
-npm run verify:structure
-npm run verify:packages
+pnpm run check
+pnpm test
+pnpm run verify:structure
+pnpm run verify:packages
 ```
