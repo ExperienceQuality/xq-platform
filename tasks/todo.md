@@ -135,7 +135,8 @@ Checkpoint 1 evidence. No feature work belongs here.
 
 **Verification:**
 
-- [ ] `pnpm install --frozen-lockfile && pnpm run check && pnpm test`
+- [ ] `pnpm install --frozen-lockfile && pnpm run check && pnpm test` (install and tests pass;
+  `check` stops at the legacy structure verifier)
 - [x] `node --test scripts/verify-release-version.test.mjs scripts/publish-packages.test.mjs`
 - [x] `pnpm run verify:packages`
 
