@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Task 1 is in progress.
+Approved on 2026-10-14. Task 1 is complete; Checkpoint 1 is pending.
 
 ## Task 1: Freeze pnpm root contract
 
@@ -11,15 +11,20 @@ commands while retaining current workspace paths for this slice.
 
 **Acceptance criteria:**
 
-- [ ] Root pins `pnpm@12.10.0`; `pnpm-workspace.yaml` includes current package/showcase paths.
-- [ ] `pnpm-lock.yaml` replaces `package-lock.json` and frozen installation succeeds.
-- [ ] Root scripts use pnpm and preserve current command names and behavior.
+- [x] Root pins `pnpm@12.10.0`; `pnpm-workspace.yaml` includes current package/showcase paths.
+- [x] `pnpm-lock.yaml` replaces `package-lock.json` and frozen installation succeeds.
+- [x] Root scripts use pnpm and preserve current command names and behavior; matching temporary
+  root workspace globs remain until the Task-8 structure gate rewrite.
 
 **Verification:**
 
-- [ ] `pnpm install --frozen-lockfile`
-- [ ] `pnpm run build`
-- [ ] `pnpm test`
+- [x] `pnpm install --frozen-lockfile`
+- [x] `pnpm run build` (including lint, format, and recursive package checks)
+- [x] `pnpm test`
+
+**Evidence:** The focused test-package check, build, lint, formatting, recursive checks, and all
+five package suites pass under pnpm. The legacy structure verifier still rejects the newly approved
+direct `@experiencequality/rest-client` dependency; Task 8 owns its dynamic topology rewrite.
 
 **Dependencies:** None
 
@@ -188,7 +193,7 @@ tests for workspace classes, dependency edges, lockfiles, cycles, and source bou
 - [ ] Validator discovers all six child workspaces through pnpm.
 - [ ] Validator rejects wrong privacy/registry policy, forbidden edges, extra lockfiles, and source
   boundary violations.
-- [ ] Workspace cycles fail through pnpm policy.
+- [ ] Workspace cycles fail through pnpm policy and temporary root workspace globs are removed.
 
 **Verification:**
 
@@ -197,7 +202,8 @@ tests for workspace classes, dependency edges, lockfiles, cycles, and source bou
 
 **Dependencies:** Task 7
 
-**Files likely touched:** `scripts/verify-structure.mjs`, `scripts/verify-structure.test.mjs`
+**Files likely touched:** `scripts/verify-structure.mjs`, `scripts/verify-structure.test.mjs`,
+`package.json`
 
 **Estimated scope:** Small
 

@@ -58,8 +58,10 @@
     "node": ">=24"
   },
   "dependencies": {
+    "@cucumber/messages": "^34.2.1",
     "@experiencequality/core": "1.0.3",
     "@experiencequality/db": "1.0.3",
+    "@experiencequality/rest-client": "1.0.3",
     "@experiencequality/stub": "1.0.3",
     "pactum": "^3.9.1",
     "tsx": "^4.23.15"

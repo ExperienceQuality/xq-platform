@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Task 1 implementation started on the same date.
+Approved on 2026-10-14. Task 1 complete on 2026-10-14; Checkpoint 1 pending.
 
 ## Overview
 
@@ -18,8 +18,9 @@ Detailed acceptance criteria and commands live in `tasks/todo.md`.
 
 ## Architecture Decisions
 
-- `pnpm-workspace.yaml` is the only workspace-membership source. Root `package.json` pins
-  `pnpm@12.10.0` and does not duplicate workspace globs.
+- `pnpm-workspace.yaml` becomes the only workspace-membership source. Task 1 temporarily retains
+  matching `package.json` globs so the existing structure gate stays green; Task 8 removes them
+  when pnpm-based discovery replaces that gate. Root `package.json` pins `pnpm@12.10.0`.
 - `pnpm-lock.yaml` is the only lockfile. Internal dependencies use `workspace:*`; packed manifests
   must contain exact aligned versions.
 - TypeScript project references remain the build-order mechanism. No task runner is added.
@@ -67,7 +68,8 @@ Task 9 ─┬── Task 12: leaf TS configs ─┤        │
 
 ### Wave 1: pnpm Behavior — Four Tasks in Parallel
 
-- Task 2: internal workspace dependency and release validation.
+- Task 2: internal workspace dependency and release validation (including normalizing the
+  already-declared direct `rest-client` dependency to `workspace:*`).
 - Task 3: package archive and fresh-consumer verification.
 - Task 4: registry lookup and publication automation.
 - Task 5: aggregate local CI orchestration.
@@ -109,7 +111,7 @@ integrates every slice and runs final acceptance.
 | 4 | publish script and publish tests |
 | 5 | `scripts/ci-test.mjs` |
 | 7 | application tree move plus path edits in workspace/CI/temporary validator |
-| 8 | structure verifier and its tests |
+| 8 | structure verifier, its tests, and removal of temporary root workspace globs |
 | 9 | root test TypeScript base and root Vitest config |
 | 10 | four Node GitHub Actions workflows |
 | 11 | five primary docs |

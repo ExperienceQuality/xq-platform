@@ -1,0 +1,8 @@
+packages:
+  - packages/*
+  - showcase/*
+
+allowBuilds:
+  esbuild: true
+disallowWorkspaceCycles: true
+linkWorkspacePackages: true

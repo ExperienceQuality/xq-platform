@@ -229,7 +229,7 @@ Conventions:
 6. Shared TypeScript, Vitest, ESLint, and Prettier policy is root-owned; retained package-local
    configuration has a documented package-specific reason.
 7. Internal dependency graph is acyclic and matches `rest-client + stub -> core`,
-   `core + db + stub -> test`, and `test -> apps/backend-e2e`.
+   `core + db + stub + rest-client -> test`, and `test -> apps/backend-e2e`.
 8. `package-lock.json` is removed; no nested lockfile, nested independent install, tracked build
    output, or tracked build-info file exists.
 9. `pnpm run check`, `pnpm test`, `pnpm run test:e2e`, and `pnpm run verify:packages` pass from
