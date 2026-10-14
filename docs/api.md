@@ -9,7 +9,7 @@ Node Test Kit is a private npm workspace for Vitest backend and API E2E tests. C
 import { defineConfig } from '@experiencequality/test/vitest/config';
 
 export default defineConfig({
-  application: { command: 'npm run start', url: 'http://127.0.0.1:4000/health' },
+  application: { command: 'pnpm run start', url: 'http://127.0.0.1:4000/health' },
   mock: { host: '127.0.0.1' },
   databases: { app: { urlEnv: 'DATABASE_URL', defaultSchema: 'public' } },
 });
