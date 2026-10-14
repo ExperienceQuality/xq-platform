@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Tasks 1–17 are complete; Checkpoint 3 is ready for review.
+Approved on 2026-10-14. Tasks 1–17 are complete; Checkpoint 3 approved on 2026-10-15.
 
 ## Task 1: Freeze pnpm root contract
 
@@ -152,7 +152,7 @@ full package tests, build, lint, formatting, recursive checks, and the aggregate
 
 - [x] All Task 6 verification passes.
 - [x] Root commands and package/release behavior match approved specification.
-- [ ] Human approves layout work.
+- [x] Human approves layout work.
 
 ## Task 7: Move private application and freeze final paths
 
@@ -421,3 +421,4 @@ approved acceptance check. No new scope belongs here.
 - [x] All specification success criteria have evidence.
 - [x] No unrelated user changes were modified.
 - [x] Final diff and verification results are ready for human review.
+- [x] Human approved Checkpoint 3 on 2026-10-15.

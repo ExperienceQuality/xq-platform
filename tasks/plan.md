@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Tasks 1–17 complete on 2026-10-14; Checkpoint 3 ready for review.
+Approved on 2026-10-14. Tasks 1–17 complete; Checkpoint 3 approved on 2026-10-15.
 
 ## Overview
 
@@ -142,7 +142,7 @@ task instead of editing the shared file.
 - All specification success criteria have evidence.
 - Focused and aggregate test selection matches pre-migration behavior.
 - CI, docs, package archives, and release automation use approved contracts.
-- Human receives final diff and verification summary.
+- Human approved the final diff and verification summary on 2026-10-15.
 
 ## Integration Strategy
 
