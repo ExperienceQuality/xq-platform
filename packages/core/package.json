@@ -6,7 +6,9 @@
     "url": "https://github.com/ExperienceQuality/node-test-kit.git",
     "directory": "packages/core"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com" },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "type": "module",
   "exports": {
     ".": {
@@ -23,8 +25,8 @@
     "node": ">=24"
   },
   "dependencies": {
-    "@experiencequality/rest-client": "1.0.3",
-    "@experiencequality/stub": "1.0.3"
+    "@experiencequality/rest-client": "workspace:*",
+    "@experiencequality/stub": "workspace:*"
   },
   "files": [
     "dist",

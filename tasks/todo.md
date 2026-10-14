@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Task 1 is complete; Checkpoint 1 is pending.
+Approved on 2026-10-14. Tasks 1–5 are complete; Checkpoint 1 is pending structure-validator integration.
 
 ## Task 1: Freeze pnpm root contract
 
@@ -42,14 +42,14 @@ source workspace ranges while retaining exact packed versions.
 
 **Acceptance criteria:**
 
-- [ ] `core` and `test` resolve internal packages only from workspace.
-- [ ] Release validation rejects mismatched versions and unsupported internal ranges.
-- [ ] Focused pack inspection proves exact `1.0.3` dependencies in produced manifests.
+- [x] `core` and `test` resolve internal packages only from workspace.
+- [x] Release validation rejects mismatched versions and unsupported internal ranges.
+- [x] Focused pack inspection proves exact `1.0.3` dependencies in produced manifests.
 
 **Verification:**
 
-- [ ] `node --test scripts/verify-release-version.test.mjs`
-- [ ] `node scripts/verify-release-version.mjs --version 1.0.3`
+- [x] `node --test scripts/verify-release-version.test.mjs`
+- [x] `node scripts/verify-release-version.mjs --version 1.0.3`
 
 **Dependencies:** Task 1
 
@@ -65,13 +65,13 @@ all public-entrypoint, type-check, Vitest, and Cucumber assertions.
 
 **Acceptance criteria:**
 
-- [ ] All five packages are packed through pnpm into an isolated artifact directory.
-- [ ] Fresh consumer installs only archives and declared peers through pnpm.
-- [ ] Existing positive and negative public-export checks remain intact.
+- [x] All five packages are packed through pnpm into an isolated artifact directory.
+- [x] Fresh consumer installs only archives and declared peers through pnpm.
+- [x] Existing positive and negative public-export checks remain intact.
 
 **Verification:**
 
-- [ ] `pnpm run verify:packages`
+- [x] `pnpm run verify:packages`
 
 **Dependencies:** Task 1
 
@@ -86,13 +86,13 @@ dependency order, registry override, or errors.
 
 **Acceptance criteria:**
 
-- [ ] Exact published versions are skipped and missing versions publish in dependency order.
-- [ ] Registry lookup distinguishes missing packages from authentication/network failures.
-- [ ] Publication targets only selected workspace package through pnpm.
+- [x] Exact published versions are skipped and missing versions publish in dependency order.
+- [x] Registry lookup distinguishes missing packages from authentication/network failures.
+- [x] Publication targets only selected workspace package through pnpm.
 
 **Verification:**
 
-- [ ] `node --test scripts/publish-packages.test.mjs`
+- [x] `node --test scripts/publish-packages.test.mjs`
 
 **Dependencies:** Task 1
 
@@ -107,14 +107,14 @@ startup, validation, failure propagation, and cleanup behavior.
 
 **Acceptance criteria:**
 
-- [ ] Aggregate checks call canonical pnpm root commands.
-- [ ] Docker Compose cleanup still runs after success and failure.
-- [ ] Current showcase path remains until Task 7 owns relocation.
+- [x] Aggregate checks call canonical pnpm root commands.
+- [x] Docker Compose cleanup still runs after success and failure.
+- [x] Current showcase path remains until Task 7 owns relocation.
 
 **Verification:**
 
-- [ ] Static command-path review of `scripts/ci-test.mjs`
-- [ ] `pnpm run check`
+- [x] Static command-path review of `scripts/ci-test.mjs`
+- [ ] `pnpm run check` (blocked only by the legacy verifier's pre-Task-8 dependency boundary)
 
 **Dependencies:** Task 1
 
@@ -129,15 +129,20 @@ Checkpoint 1 evidence. No feature work belongs here.
 
 **Acceptance criteria:**
 
-- [ ] All four slices merge without violating exclusive file ownership.
-- [ ] Packed manifests contain exact internal versions and publication-plan tests pass.
-- [ ] No repository-owned script uses npm workspace orchestration.
+- [x] All four slices merge without violating exclusive file ownership.
+- [x] Packed manifests contain exact internal versions and publication-plan tests pass.
+- [x] No repository-owned script uses npm workspace orchestration.
 
 **Verification:**
 
 - [ ] `pnpm install --frozen-lockfile && pnpm run check && pnpm test`
-- [ ] `node --test scripts/*.test.mjs`
-- [ ] `pnpm run verify:packages`
+- [x] `node --test scripts/verify-release-version.test.mjs scripts/publish-packages.test.mjs`
+- [x] `pnpm run verify:packages`
+
+**Wave evidence:** Frozen install, release/publication tests, five-archive fresh-consumer checks,
+full package tests, build, lint, formatting, and recursive checks pass. The aggregate `pnpm run
+check` remains pending Task 8 because the current validator rejects the approved direct
+`rest-client -> test` edge.
 
 **Dependencies:** Tasks 2, 3, 4, and 5
 

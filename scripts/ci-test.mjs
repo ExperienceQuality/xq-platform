@@ -9,14 +9,14 @@ if (process.argv.length !== 2) {
   throw new Error('usage: node scripts/ci-test.mjs');
 }
 
-run('npm', ['run', 'check']);
-run('npm', ['test']);
-run('npm', ['run', 'ci:cucumber']);
+run('pnpm', ['run', 'check']);
+run('pnpm', ['test']);
+run('pnpm', ['run', 'ci:cucumber']);
 
 let validationError;
 try {
   run('docker', ['compose', '-f', composeFile, 'up', '-d', '--wait']);
-  run('npm', ['run', 'test:e2e']);
+  run('pnpm', ['run', 'test:e2e']);
 } catch (error) {
   validationError = error;
 } finally {
@@ -29,7 +29,7 @@ try {
 }
 if (validationError) throw validationError;
 
-run('npm', ['run', 'verify:packages']);
+run('pnpm', ['run', 'verify:packages']);
 
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
@@ -37,9 +37,11 @@ function run(command, args, options = {}) {
     encoding: 'utf8',
     env: process.env,
     stdio: 'inherit',
-    ...options
+    ...options,
   });
   if (result.status !== 0) {
-    throw new Error(`${command} ${args.join(' ')} failed with exit code ${result.status ?? 'unknown'}`);
+    throw new Error(
+      `${command} ${args.join(' ')} failed with exit code ${result.status ?? 'unknown'}`,
+    );
   }
 }

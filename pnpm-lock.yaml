@@ -197,10 +197,10 @@ importers:
   packages/core:
     dependencies:
       '@experiencequality/rest-client':
-        specifier: 1.0.3
+        specifier: workspace:*
         version: link:../rest-client
       '@experiencequality/stub':
-        specifier: 1.0.3
+        specifier: workspace:*
         version: link:../stub
 
   packages/db:
@@ -237,16 +237,16 @@ importers:
         specifier: ^34.2.1
         version: 34.2.1
       '@experiencequality/core':
-        specifier: 1.0.3
+        specifier: workspace:*
         version: link:../core
       '@experiencequality/db':
-        specifier: 1.0.3
+        specifier: workspace:*
         version: link:../db
       '@experiencequality/rest-client':
-        specifier: 1.0.3
+        specifier: workspace:*
         version: link:../rest-client
       '@experiencequality/stub':
-        specifier: 1.0.3
+        specifier: workspace:*
         version: link:../stub
       pactum:
         specifier: ^3.9.1
