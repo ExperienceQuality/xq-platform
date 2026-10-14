@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Tasks 1–7 are complete; Checkpoint 2 awaits human approval for repository-surface work.
+Approved on 2026-10-14. Tasks 1–7 are complete; Checkpoint 2 approved on 2026-10-14.
 
 ## Task 1: Freeze pnpm root contract
 
@@ -182,7 +182,7 @@ membership and active script paths, and remove empty Kafka placeholder.
 
 - [x] pnpm reports five libraries and one private application.
 - [x] Application checks pass from `apps/backend-e2e`.
-- [ ] Human approves repository-surface parallel work.
+- [x] Human approves repository-surface parallel work.
 
 ## Parallel Wave 3: Run Tasks 8–11 together after Task 7
 
