@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Tasks 1–6 are complete; Checkpoint 1 awaits human approval for layout work.
+Approved on 2026-10-14. Tasks 1–7 are complete; Checkpoint 2 awaits human approval for repository-surface work.
 
 ## Task 1: Freeze pnpm root contract
 
@@ -161,15 +161,15 @@ membership and active script paths, and remove empty Kafka placeholder.
 
 **Acceptance criteria:**
 
-- [ ] Application package name, privacy, files, and behavior are unchanged at new path.
-- [ ] Workspace, aggregate CI runner, and temporary structure validator use final path.
-- [ ] No active `showcase/` tree or `packages/kafka-test-server` remains.
+- [x] Application package name, privacy, files, and behavior are unchanged at new path.
+- [x] Workspace, aggregate CI runner, and temporary structure validator use final path.
+- [x] No active `showcase/` tree or `packages/kafka-test-server` remains.
 
 **Verification:**
 
-- [ ] `pnpm --filter @experiencequality/showcase-backend-e2e run check`
-- [ ] `docker compose -f apps/backend-e2e/docker-compose.yml config`
-- [ ] `pnpm run verify:structure`
+- [x] `pnpm --filter @experiencequality/showcase-backend-e2e run check`
+- [x] `docker compose -f apps/backend-e2e/docker-compose.yml config`
+- [x] `pnpm run verify:structure`
 
 **Dependencies:** Task 6 and Checkpoint 1 approval
 
@@ -180,8 +180,8 @@ membership and active script paths, and remove empty Kafka placeholder.
 
 ## Checkpoint 2: final layout contract
 
-- [ ] pnpm reports five libraries and one private application.
-- [ ] Application checks pass from `apps/backend-e2e`.
+- [x] pnpm reports five libraries and one private application.
+- [x] Application checks pass from `apps/backend-e2e`.
 - [ ] Human approves repository-surface parallel work.
 
 ## Parallel Wave 3: Run Tasks 8–11 together after Task 7

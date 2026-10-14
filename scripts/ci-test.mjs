@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const composeFile = 'showcase/backend-e2e/docker-compose.yml';
+const composeFile = 'apps/backend-e2e/docker-compose.yml';
 
 if (process.argv.length !== 2) {
   throw new Error('usage: node scripts/ci-test.mjs');

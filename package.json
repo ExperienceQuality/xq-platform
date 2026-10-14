@@ -11,7 +11,7 @@
   "description": "A platform-owned Vitest foundation for backend functional E2E tests.",
   "workspaces": [
     "packages/*",
-    "showcase/*"
+    "apps/*"
   ],
   "scripts": {
     "build": "tsc -b",

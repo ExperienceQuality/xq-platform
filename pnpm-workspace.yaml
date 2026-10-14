@@ -1,6 +1,6 @@
 packages:
   - packages/*
-  - showcase/*
+  - apps/*
 
 allowBuilds:
   esbuild: true

@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const libraryNames = ['rest-client', 'db', 'stub', 'core', 'test'];
 const publicPackageNames = new Set(libraryNames.map((name) => `@experiencequality/${name}`));
-const workspacePaths = [...libraryNames.map((name) => `packages/${name}`), 'showcase/backend-e2e'];
+const workspacePaths = [...libraryNames.map((name) => `packages/${name}`), 'apps/backend-e2e'];
 const expectedDependencies = new Map([
   ['rest-client', []],
   ['db', []],
@@ -25,7 +25,7 @@ const expectedDependencies = new Map([
 const rootPackage = readJson('package.json');
 assert(rootPackage.private === true, 'root package must remain private');
 assert(
-  JSON.stringify(rootPackage.workspaces) === JSON.stringify(['packages/*', 'showcase/*']),
+  JSON.stringify(rootPackage.workspaces) === JSON.stringify(['packages/*', 'apps/*']),
   'unexpected root workspace globs',
 );
 

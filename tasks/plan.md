@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Tasks 1–6 complete on 2026-10-14; Checkpoint 1 awaits human approval for layout work.
+Approved on 2026-10-14. Tasks 1–7 complete on 2026-10-14; Checkpoint 2 awaits human approval for repository-surface work.
 
 ## Overview
 
