@@ -26,7 +26,8 @@
     "ci:build": "pnpm run verify:structure && pnpm run verify:packages",
     "ci:cucumber": "pnpm run build && node scripts/verify-cucumber-report.mjs",
     "ci:test": "node scripts/ci-test.mjs",
-    "ci:release": "node scripts/ci-test.mjs"
+    "ci:release": "node scripts/ci-test.mjs",
+    "scaffold": "node scripts/scaffold-workspace.mjs"
   },
   "engines": {
     "node": ">=24"
