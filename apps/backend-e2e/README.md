@@ -71,7 +71,7 @@ The app uses the local Compose URL when `DATABASE_URL` is missing.
 
 ```bash
 docker compose up -d
-npm test
+pnpm test
 ```
 
 Start the API directly:

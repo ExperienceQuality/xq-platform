@@ -2,24 +2,20 @@ import { defineConfig } from 'vitest/config';
 
 const simpleLibraryProjects = [
   {
-    name: 'rest-client',
     root: './packages/rest-client',
-    test: { environment: 'node', include: ['test/**/*.test.ts'] },
+    test: { name: 'rest-client', environment: 'node', include: ['test/**/*.test.ts'] },
   },
   {
-    name: 'db',
     root: './packages/db',
-    test: { environment: 'node', include: ['test/**/*.test.ts'] },
+    test: { name: 'db', environment: 'node', include: ['test/**/*.test.ts'] },
   },
   {
-    name: 'stub',
     root: './packages/stub',
-    test: { environment: 'node', include: ['test/**/*.test.ts'] },
+    test: { name: 'stub', environment: 'node', include: ['test/**/*.test.ts'] },
   },
   {
-    name: 'core',
     root: './packages/core',
-    test: { environment: 'node', include: ['test/**/*.test.ts'] },
+    test: { name: 'core', environment: 'node', include: ['test/**/*.test.ts'] },
   },
 ];
 

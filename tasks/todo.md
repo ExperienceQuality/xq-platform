@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Tasks 1–7 are complete; Checkpoint 2 approved on 2026-10-14.
+Approved on 2026-10-14. Tasks 1–16 are complete; final integration remains.
 
 ## Task 1: Freeze pnpm root contract
 
@@ -287,13 +287,13 @@ includes by extending Task 9's shared base.
 
 **Acceptance criteria:**
 
-- [ ] All three leaf packages retain strict no-emit test checking.
-- [ ] Existing test and config includes remain unchanged.
-- [ ] No generated test output appears.
+- [x] All three leaf packages retain strict no-emit test checking.
+- [x] Existing test and config includes remain unchanged.
+- [x] No generated test output appears.
 
 **Verification:**
 
-- [ ] Focused `check` scripts pass for all three packages.
+- [x] Focused `check` scripts pass for all three packages.
 
 **Dependencies:** Task 9
 
@@ -308,14 +308,14 @@ isolation and facade-specific includes.
 
 **Acceptance criteria:**
 
-- [ ] Both packages retain no-emit checks without build references.
-- [ ] Facade unit, integration, and configuration sources remain included.
-- [ ] Full TypeScript build graph remains unchanged.
+- [x] Both packages retain no-emit checks without build references.
+- [x] Facade unit, integration, and configuration sources remain included.
+- [x] Full TypeScript build graph remains unchanged.
 
 **Verification:**
 
-- [ ] Focused `check` scripts pass for `core` and `test`.
-- [ ] `pnpm run build`
+- [x] Focused `check` scripts pass for `core` and `test`.
+- [x] `pnpm run build`
 
 **Dependencies:** Task 9
 
@@ -330,14 +330,14 @@ Vitest configs for `core` and `rest-client`.
 
 **Acceptance criteria:**
 
-- [ ] Focused scripts select same test files as before.
-- [ ] Root project names are stable and package-specific.
-- [ ] Removed configs contain no unique behavior.
+- [x] Focused scripts select same test files as before.
+- [x] Root project names are stable and package-specific.
+- [x] Removed configs contain no unique behavior.
 
 **Verification:**
 
-- [ ] `pnpm --filter @experiencequality/core test`
-- [ ] `pnpm --filter @experiencequality/rest-client test`
+- [x] `pnpm --filter @experiencequality/core test`
+- [x] `pnpm --filter @experiencequality/rest-client test`
 
 **Dependencies:** Task 9
 
@@ -352,14 +352,14 @@ Vitest configs for `db` and `stub`.
 
 **Acceptance criteria:**
 
-- [ ] Focused scripts select same test files as before.
-- [ ] Database unit tests remain separate from facade database lifecycle configuration.
-- [ ] Removed configs contain no unique behavior.
+- [x] Focused scripts select same test files as before.
+- [x] Database unit tests remain separate from facade database lifecycle configuration.
+- [x] Removed configs contain no unique behavior.
 
 **Verification:**
 
-- [ ] `pnpm --filter @experiencequality/db test`
-- [ ] `pnpm --filter @experiencequality/stub test`
+- [x] `pnpm --filter @experiencequality/db test`
+- [x] `pnpm --filter @experiencequality/stub test`
 
 **Dependencies:** Task 9
 
@@ -374,9 +374,9 @@ maintained path references while leaving unrelated intent documents untouched.
 
 **Acceptance criteria:**
 
-- [ ] Application README works from final path with pnpm commands.
-- [ ] Consumer guide defaults to pnpm without claiming packages require pnpm.
-- [ ] No owned document references obsolete paths or repository npm commands.
+- [x] Application README works from final path with pnpm commands.
+- [x] Consumer guide defaults to pnpm without claiming packages require pnpm.
+- [x] No owned document references obsolete paths or repository npm commands.
 
 **Verification:**
 

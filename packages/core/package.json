@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc -b",
     "check": "tsc -p tsconfig.test.json --noEmit",
-    "test": "vitest run"
+    "test": "pnpm --dir ../.. exec vitest run --config vitest.config.ts packages/core/test"
   },
   "engines": {
     "node": ">=24"
