@@ -19,7 +19,7 @@ Install the facade and its compatible peer tools at the versions approved for
 the release. The current workspace release is `1.0.3`:
 
 ```bash
-npm install --save-dev @experiencequality/test@1.0.3 @cucumber/cucumber@13.2.1 vitest@4.1.11
+pnpm add --save-dev @experiencequality/test@1.0.3 @cucumber/cucumber@13.2.1 vitest@4.1.11
 ```
 
 Consumers normally import only `@experiencequality/test`. The `@experiencequality/core`, `@experiencequality/db`,

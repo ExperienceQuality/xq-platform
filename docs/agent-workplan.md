@@ -85,7 +85,7 @@ Files:
 
 - `packages/db/src/database.ts`
 - `packages/db/test/database.test.ts`
-- `showcase/backend-e2e/vitest.config.ts`
+- `apps/backend-e2e/vitest.config.ts`
 
 Work:
 
@@ -281,7 +281,7 @@ Owner: Testing Specialist
 
 Files:
 
-- `showcase/backend-e2e/test/**`
+- `apps/backend-e2e/test/**`
 
 Work:
 
@@ -335,10 +335,10 @@ Depends on: CI-03, CI-04.
 Work is complete when:
 
 - All P0 items pass their BDD acceptance.
-- `npm run check` passes.
-- `npm test` passes.
-- `npm run verify:packages` passes.
-- `npm run ci:test` passes where Docker is available.
+- `pnpm run check` passes.
+- `pnpm test` passes.
+- `pnpm run verify:packages` passes.
+- `pnpm run ci:test` passes where Docker is available.
 - Main-only Pages deployment publishes latest successful report.
 - Failed runs retain downloadable report artifacts without replacing Pages.
 - Database, namespace, backend lifecycle, and report contracts are documented.

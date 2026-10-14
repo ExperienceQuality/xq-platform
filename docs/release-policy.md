@@ -30,7 +30,7 @@ The publishable set is the five `@experiencequality/*` packages:
 All five versions must remain the same `MAJOR.MINOR.PATCH` value. Their
 `publishConfig` points to `https://npm.pkg.github.com`, and the publish job
 uses the repository-provided GitHub token with `packages: write`. The root
-workspace and `showcase/backend-e2e` are private and are not published.
+workspace and `apps/backend-e2e` are private and are not published.
 
 The current repository evidence identifies GitHub Packages as the company
 registry, but does not identify a public npm distribution policy. Consumers
@@ -51,8 +51,9 @@ verification, the publish job runs these commands in order:
 ```
 
 The order follows the dependency graph: `core` depends on `rest-client` and
-`stub`, while `test` depends on `core`, `db`, and `stub`. The workflow builds
-before publishing and does not publish the root workspace or showcase.
+`stub`, while `test` depends on `core`, `db`, `rest-client`, and `stub`. The
+workflow builds before publishing and does not publish the root workspace or
+`apps/backend-e2e`.
 
 ## Retry and recovery
 

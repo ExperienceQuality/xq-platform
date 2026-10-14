@@ -21,7 +21,13 @@ if (isMainModule()) {
   }
 }
 
-export function publishPackages({ packageRoot, version, registry = defaultRegistry, lookup = lookupPublishedVersion, publish = publishPackage }) {
+export function publishPackages({
+  packageRoot,
+  version,
+  registry = defaultRegistry,
+  lookup = lookupPublishedVersion,
+  publish = publishPackage,
+}) {
   const plan = createPublishPlan({ packageRoot, version, registry, lookup });
   for (const item of plan) {
     if (item.action === 'skip') {
@@ -38,7 +44,9 @@ export function createPublishPlan({ packageRoot, version, registry = defaultRegi
   for (const packageDirectory of publishablePackages) {
     const packageJson = readPackage(packageRoot, packageDirectory);
     if (packageJson.version !== version) {
-      throw new Error(`${packageDirectory}/package.json has version ${JSON.stringify(packageJson.version)}; expected ${version}`);
+      throw new Error(
+        `${packageDirectory}/package.json has version ${JSON.stringify(packageJson.version)}; expected ${version}`,
+      );
     }
     const publishedVersion = lookup(packageJson.name, version, registry);
     if (publishedVersion === version) {
@@ -46,32 +54,51 @@ export function createPublishPlan({ packageRoot, version, registry = defaultRegi
       continue;
     }
     if (publishedVersion !== null) {
-      throw new Error(`registry returned ${JSON.stringify(publishedVersion)} for ${packageJson.name}@${version}`);
+      throw new Error(
+        `registry returned ${JSON.stringify(publishedVersion)} for ${packageJson.name}@${version}`,
+      );
     }
     plan.push({ action: 'publish', packageDirectory, name: packageJson.name });
   }
   return plan;
 }
 
-export function lookupPublishedVersion(name, version, registry = defaultRegistry) {
+export function lookupPublishedVersion(
+  name,
+  version,
+  registry = defaultRegistry,
+  run = execFileSync,
+) {
   try {
-    const output = execFileSync('npm', ['view', `${name}@${version}`, 'version', '--json', '--registry', registry], {
-      cwd: root,
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'pipe']
-    }).trim();
+    const output = run(
+      'pnpm',
+      ['view', `${name}@${version}`, 'version', '--json', '--registry', registry],
+      {
+        cwd: root,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      },
+    ).trim();
     return JSON.parse(output) === version ? version : JSON.parse(output);
   } catch (error) {
     const stderr = String(error.stderr ?? '');
-    if (error.status === 1 && /E404|404 Not Found|is not in this registry/i.test(stderr)) return null;
+    if (
+      error.status === 1 &&
+      /ERR_PNPM_FETCH_404|E404|404 Not Found|is not in this registry/i.test(stderr)
+    )
+      return null;
     throw new Error(`could not inspect ${name}@${version}: ${stderr.trim() || error.message}`);
   }
 }
 
-export function publishPackage({ packageDirectory, name }, registry = defaultRegistry) {
-  execFileSync('npm', ['publish', '--workspace', name, '--registry', registry], {
+export function publishPackage(
+  { packageDirectory, name },
+  registry = defaultRegistry,
+  run = execFileSync,
+) {
+  run('pnpm', ['--filter', name, 'publish', '--registry', registry], {
     cwd: root,
-    stdio: 'inherit'
+    stdio: 'inherit',
   });
   console.log(`Published ${name} from packages/${packageDirectory}.`);
 }
@@ -86,5 +113,8 @@ function readPackage(packageRoot, packageDirectory) {
 }
 
 function isMainModule() {
-  return process.argv[1] !== undefined && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+  return (
+    process.argv[1] !== undefined &&
+    import.meta.url === pathToFileURL(resolve(process.argv[1])).href
+  );
 }

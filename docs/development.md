@@ -4,10 +4,10 @@ All package source, tests, and the E2E example are TypeScript. Install from the
 repository root.
 
 ```bash
-npm install
-npm run check
-npm test
-npm run build
+pnpm install
+pnpm run check
+pnpm test
+pnpm run build
 ```
 
 The workspace layout is enforced by `scripts/verify-structure.mjs`. Package
@@ -15,8 +15,8 @@ archives are built and tested in a fresh temporary consumer by
 `scripts/verify-packages.mjs`:
 
 ```bash
-npm run verify:structure
-npm run verify:packages
+pnpm run verify:structure
+pnpm run verify:packages
 ```
 
 Build output goes to each package's ignored `dist/` directory. Archive checks
@@ -30,7 +30,7 @@ The internal release packages are:
 - `@experiencequality/core`
 - `@experiencequality/test`
 
-The root workspace and showcase remain private. The five publishable packages
+The root workspace and `apps/backend-e2e` remain private. The five publishable packages
 currently use version `1.0.3`; release all five internal packages at the same
 `MAJOR.MINOR.PATCH` version, and keep their internal dependency versions exact
 and aligned. Packages are published to the company GitHub Packages npm

@@ -24,15 +24,15 @@ const documentedTestSubpaths = [
   './package.json',
 ];
 const consumer = await mkdtemp(join(tmpdir(), 'xq-test-consumer-'));
-const npmCache = resolve(consumer, '.npm-cache');
+const pnpmStore = resolve(consumer, '.pnpm-store');
 
 try {
-  run('npm', ['run', 'build'], root);
+  run('pnpm', ['run', 'build'], root);
   await rm(artifacts, { recursive: true, force: true });
   await mkdir(artifacts, { recursive: true });
 
   for (const packageName of packageNames) {
-    run('npm', ['pack', '--workspace', packageName, '--pack-destination', artifacts], root);
+    run('pnpm', ['--filter', packageName, 'pack', '--pack-destination', artifacts], root);
   }
 
   const archives = (await readdir(artifacts))
@@ -42,8 +42,14 @@ try {
   if (archives.length !== packageNames.length) {
     throw new Error(`expected ${packageNames.length} package archives, found ${archives.length}`);
   }
+  const archiveByPackageName = Object.fromEntries(
+    archives.map((archive) => [
+      JSON.parse(readArchiveFile(archive, 'package/package.json')).name,
+      archive,
+    ]),
+  );
 
-  // Given a package archive produced by npm pack,
+  // Given a package archive produced by pnpm pack,
   // When its manifest and file list are inspected,
   // Then every declared public target must resolve and private source must be absent.
   for (const archive of archives) {
@@ -58,10 +64,31 @@ try {
         version: '0.0.0',
         private: true,
         type: 'module',
+        dependencies: {
+          ...Object.fromEntries(
+            packageNames.map((packageName) => [
+              packageName,
+              `file:${archiveByPackageName[packageName]}`,
+            ]),
+          ),
+          '@cucumber/cucumber': '^13.2.1',
+          vitest: '^4.0.0',
+          typescript: '^5.9.0',
+          '@types/node': '^24.0.0',
+        },
       },
       null,
       2,
     )}\n`,
+  );
+  await writeFile(
+    join(consumer, 'pnpm-workspace.yaml'),
+    `overrides:\n${packageNames
+      .map(
+        (packageName) =>
+          `  ${JSON.stringify(packageName)}: file:${archiveByPackageName[packageName]}`,
+      )
+      .join('\n')}\n`,
   );
   await writeFile(
     join(consumer, 'tsconfig.json'),
@@ -210,21 +237,7 @@ Then('response JSON at {string} contains:', async function (this: ResponseWorld,
 `,
   );
 
-  run(
-    'npm',
-    [
-      'install',
-      '--ignore-scripts',
-      '--no-audit',
-      '--no-fund',
-      ...archives,
-      '@cucumber/cucumber@^13.2.1',
-      'vitest@^4.0.0',
-      'typescript@^5.9.0',
-      '@types/node@^24.0.0',
-    ],
-    consumer,
-  );
+  run('pnpm', ['install', '--ignore-scripts', '--store-dir', pnpmStore], consumer);
   // Given a fresh consumer installed only from packed archives,
   // When each public package root is imported,
   // Then package resolution must work without workspace links.
@@ -417,7 +430,7 @@ function run(command, args, cwd, extraEnvironment = {}) {
   const result = spawnSync(command, args, {
     cwd,
     encoding: 'utf8',
-    env: { ...process.env, ...extraEnvironment, npm_config_cache: npmCache },
+    env: { ...process.env, ...extraEnvironment, npm_config_store_dir: pnpmStore },
   });
   if (result.status !== 0) {
     throw new Error(`${command} ${args.join(' ')} failed\n${result.stdout}\n${result.stderr}`);
@@ -430,7 +443,7 @@ function runAsync(command, args, cwd, extraEnvironment = {}) {
   return new Promise((resolveRun, rejectRun) => {
     const child = spawn(command, args, {
       cwd,
-      env: { ...process.env, ...extraEnvironment, npm_config_cache: npmCache },
+      env: { ...process.env, ...extraEnvironment, npm_config_store_dir: pnpmStore },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let stdout = '';

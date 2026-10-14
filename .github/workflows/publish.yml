@@ -29,17 +29,20 @@ jobs:
           persist-credentials: false
           ref: ${{ inputs.ref }}
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.10.0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
           registry-url: 'https://npm.pkg.github.com'
-          cache: npm
+          cache: pnpm
 
       - name: Install exact dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build release packages
-        run: npm run build
+        run: pnpm run build
 
       - name: Publish missing company packages
         env:

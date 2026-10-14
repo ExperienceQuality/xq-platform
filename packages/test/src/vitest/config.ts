@@ -2,8 +2,7 @@ import { fileURLToPath } from 'node:url';
 import type { BackendOptions } from '@experiencequality/core';
 import type { DatabaseOptions } from '@experiencequality/db';
 import type { PactumServerOptions } from '@experiencequality/stub';
-import type { UserConfig } from 'vite';
-import { defineConfig as defineVitestConfig, type TestUserConfig } from 'vitest/config';
+import { defineConfig as defineVitestConfig, type TestUserConfig, type ViteUserConfig } from 'vitest/config';
 
 export interface KitOptions {
   application?: BackendOptions;
@@ -11,7 +10,7 @@ export interface KitOptions {
   mock?: PactumServerOptions;
 }
 
-export type NodeTestKitConfig = Omit<UserConfig, 'test'> & { test?: TestUserConfig } & KitOptions;
+export type NodeTestKitConfig = Omit<ViteUserConfig, 'test'> & { test?: TestUserConfig } & KitOptions;
 
 const globalSetup = fileURLToPath(new URL(import.meta.url.endsWith('.ts') ? './global-setup.ts' : './global-setup.js', import.meta.url));
 
@@ -24,7 +23,7 @@ const defaultTest = {
   reporters: ['default']
 };
 
-export function defineConfig(options: NodeTestKitConfig = {}): UserConfig {
+export function defineConfig(options: NodeTestKitConfig = {}): ViteUserConfig {
   const { test = {}, ...kitOptions } = options;
   const userGlobalSetup = test.globalSetup
     ? Array.isArray(test.globalSetup) ? test.globalSetup : [test.globalSetup]
@@ -37,5 +36,5 @@ export function defineConfig(options: NodeTestKitConfig = {}): UserConfig {
       globalSetup: [globalSetup, ...userGlobalSetup],
       nodeTestKit: kitOptions
     }
-  } as unknown as UserConfig);
+  } as unknown as ViteUserConfig);
 }
