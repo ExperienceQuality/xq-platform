@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Tasks 1–16 complete on 2026-10-14; final integration pending.
+Approved on 2026-10-14. Tasks 1–17 complete on 2026-10-14; Checkpoint 3 ready for review.
 
 ## Overview
 

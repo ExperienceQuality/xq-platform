@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved on 2026-10-14. Tasks 1–16 are complete; final integration remains.
+Approved on 2026-10-14. Tasks 1–17 are complete; Checkpoint 3 is ready for review.
 
 ## Task 1: Freeze pnpm root contract
 
@@ -397,17 +397,18 @@ approved acceptance check. No new scope belongs here.
 
 **Acceptance criteria:**
 
-- [ ] All parallel slices merge while satisfying every slice's acceptance criteria.
-- [ ] Exactly six child workspaces, one lockfile, and approved config ownership remain.
-- [ ] Public exports, versions, engines, registry, CI, and release behavior are preserved.
+- [x] All parallel slices merge while satisfying every slice's acceptance criteria.
+- [x] Exactly six child workspaces, one lockfile, and approved config ownership remain.
+- [x] Public exports, versions, engines, registry, CI, and release behavior are preserved.
 
 **Verification:**
 
-- [ ] `pnpm install --frozen-lockfile`
-- [ ] `pnpm run check && pnpm test && pnpm run ci:test`
-- [ ] `pnpm run verify:packages`
-- [ ] `git diff --check`
-- [ ] Global stale-path and npm-workspace-command search returns no actionable matches.
+- [x] `pnpm install --frozen-lockfile`
+- [x] `pnpm run check && pnpm test && pnpm run ci:test`
+- [x] `pnpm run verify:packages`
+- [x] `git diff --check`
+- [x] Global stale-path and npm-workspace-command search returns no actionable matches; historical
+  references remain only in the specification/task records and the separate skill guide.
 
 **Dependencies:** Tasks 8–16
 
@@ -417,6 +418,6 @@ approved acceptance check. No new scope belongs here.
 
 ## Checkpoint 3: complete
 
-- [ ] All specification success criteria have evidence.
-- [ ] No unrelated user changes were modified.
-- [ ] Final diff and verification results are ready for human review.
+- [x] All specification success criteria have evidence.
+- [x] No unrelated user changes were modified.
+- [x] Final diff and verification results are ready for human review.
