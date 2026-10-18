@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>XQ browser e2e</title>
+  </head>
+  <body>
+    <h1>Hello XQ</h1>
+    <button id="greet" type="button">Greet</button>
+    <p data-testid="greeting"></p>
+    <script>
+      document.getElementById('greet').addEventListener('click', async () => {
+        const target = document.querySelector('[data-testid="greeting"]');
+        try {
+          const response = await fetch('/api/hello');
+          const body = await response.json();
+          target.textContent = body.message ?? 'no message';
+        } catch (error) {
+          target.textContent = `error: ${error instanceof Error ? error.message : String(error)}`;
+        }
+      });
+    </script>
+  </body>
+</html>

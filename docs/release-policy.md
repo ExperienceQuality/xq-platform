@@ -19,18 +19,19 @@ package metadata also identifies its workspace directory.
 
 ## Packages and registry
 
-The publishable set is the five `@experiencequality/*` packages:
+The publishable set is the six `@experiencequality/*` packages:
 
 1. `@experiencequality/rest-client`
 2. `@experiencequality/db`
 3. `@experiencequality/stub`
 4. `@experiencequality/core`
 5. `@experiencequality/test`
+6. `@experiencequality/test-browser`
 
-All five versions must remain the same `MAJOR.MINOR.PATCH` value. Their
+All six versions must remain the same `MAJOR.MINOR.PATCH` value. Their
 `publishConfig` points to `https://npm.pkg.github.com`, and the publish job
 uses the repository-provided GitHub token with `packages: write`. The root
-workspace and `apps/backend-e2e` are private and are not published.
+workspace and `apps/` are private and are not published.
 
 The current repository evidence identifies GitHub Packages as the company
 registry, but does not identify a public npm distribution policy. Consumers

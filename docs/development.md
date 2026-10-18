@@ -29,9 +29,10 @@ The internal release packages are:
 - `@experiencequality/stub`
 - `@experiencequality/core`
 - `@experiencequality/test`
+- `@experiencequality/test-browser`
 
-The root workspace and `apps/backend-e2e` remain private. The five publishable packages
-currently use version `1.0.3`; release all five internal packages at the same
+The root workspace and `apps/` remain private. The six publishable packages
+currently use version `1.0.3`; release all six internal packages at the same
 `MAJOR.MINOR.PATCH` version, and keep their internal dependency versions exact
 and aligned. Packages are published to the company GitHub Packages npm
 registry, not the public npm registry. The release workflow uses the
@@ -73,7 +74,7 @@ deployment job. If this setting is missing, `actions/deploy-pages` fails with a
 
 ### Idempotent package publication
 
-The release workflow verifies that all five package manifests and internal
+The release workflow verifies that all six package manifests and internal
 dependency ranges match the routed tag version before publication. Its publish
 step checks each exact package/version in dependency order, skips versions
 already present in GitHub Packages, and publishes only missing versions. A

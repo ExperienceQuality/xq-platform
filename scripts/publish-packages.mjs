@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { verifyReleaseVersion } from './verify-release-version.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export const publishablePackages = ['rest-client', 'db', 'stub', 'core', 'test'];
+export const publishablePackages = ['rest-client', 'db', 'stub', 'core', 'test', 'test-browser'];
 const defaultRegistry = 'https://npm.pkg.github.com';
 
 if (isMainModule()) {

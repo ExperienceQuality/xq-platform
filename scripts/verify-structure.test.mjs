@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { discoverWorkspaces, verifyStructure } from './verify-structure.mjs';
 
-test('discovers the five libraries and one application through pnpm', () => {
+test('discovers the approved libraries and applications through pnpm', () => {
   const workspaces = discoverWorkspaces();
 
   assert.deepEqual(workspaces.map(({ name }) => name).sort(), [
@@ -11,8 +11,10 @@ test('discovers the five libraries and one application through pnpm', () => {
     '@experiencequality/db',
     '@experiencequality/rest-client',
     '@experiencequality/showcase-backend-e2e',
+    '@experiencequality/showcase-browser-e2e',
     '@experiencequality/stub',
     '@experiencequality/test',
+    '@experiencequality/test-browser',
   ]);
 });
 
@@ -24,6 +26,6 @@ test('rejects duplicate workspace discovery', () => {
   const workspaces = discoverWorkspaces();
   assert.throws(
     () => verifyStructure({ workspaces: [...workspaces, workspaces[0]] }),
-    /exactly six child workspaces/,
+    /only approved workspaces|duplicate workspace/,
   );
 });

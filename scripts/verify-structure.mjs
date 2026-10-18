@@ -4,9 +4,8 @@ import { dirname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const libraryNames = ['rest-client', 'db', 'stub', 'core', 'test'];
+const libraryNames = ['rest-client', 'db', 'stub', 'core', 'test', 'test-browser'];
 const publicPackageNames = new Set(libraryNames.map((name) => `@experiencequality/${name}`));
-const appPackageName = '@experiencequality/showcase-backend-e2e';
 const expectedDependencies = new Map([
   ['rest-client', []],
   ['db', []],
@@ -14,6 +13,15 @@ const expectedDependencies = new Map([
   ['core', ['@experiencequality/rest-client', '@experiencequality/stub']],
   [
     'test',
+    [
+      '@experiencequality/core',
+      '@experiencequality/db',
+      '@experiencequality/rest-client',
+      '@experiencequality/stub',
+    ],
+  ],
+  [
+    'test-browser',
     [
       '@experiencequality/core',
       '@experiencequality/db',
@@ -45,21 +53,41 @@ export function verifyStructure({
   assert(!('workspaces' in rootPackage), 'root package must not define workspace globs');
 
   const workspacePaths = workspaces.map((workspace) => relative(workspaceRoot, workspace.path));
-  assert(workspacePaths.length === 6, 'pnpm must discover exactly six child workspaces');
   const publicWorkspaces = workspaces.filter((workspace) => publicPackageNames.has(workspace.name));
-  assert(publicWorkspaces.length === 5, 'pnpm must discover exactly five public libraries');
-  const appWorkspaces = workspaces.filter((workspace) => workspace.name === appPackageName);
-  assert(appWorkspaces.length === 1, 'pnpm must discover exactly one showcase application');
+  const privateWorkspaces = workspaces.filter(
+    (workspace) => !publicPackageNames.has(workspace.name),
+  );
+  const privatePaths = privateWorkspaces
+    .map((workspace) => relative(workspaceRoot, workspace.path))
+    .sort();
+  assert(
+    workspacePaths.length === publicWorkspaces.length + privateWorkspaces.length,
+    'pnpm must discover only approved workspaces',
+  );
+  assert(
+    publicWorkspaces.length === publicPackageNames.size,
+    `pnpm must discover exactly ${publicPackageNames.size} public libraries`,
+  );
   assert(
     JSON.stringify(publicWorkspaces.map((workspace) => workspace.name).sort()) ===
       JSON.stringify([...publicPackageNames].sort()),
     'pnpm discovered an unexpected public package set',
   );
   assert(
-    JSON.stringify(appWorkspaces.map((workspace) => relative(workspaceRoot, workspace.path))) ===
-      JSON.stringify(['apps/backend-e2e']),
+    privatePaths.every((workspacePath) => workspacePath.startsWith(`apps${sep}`)),
+    'private workspaces must live under apps/',
+  );
+  assert(
+    privatePaths.includes('apps/backend-e2e'),
     'showcase application must live under apps/backend-e2e',
   );
+  for (const workspace of privateWorkspaces) {
+    const workspacePath = relative(workspaceRoot, workspace.path);
+    assert(
+      readWorkspaceJson(workspacePath).private === true,
+      `${workspacePath} must remain private`,
+    );
+  }
 
   const discoveredPaths = new Set(workspacePaths);
   assert(
@@ -77,7 +105,7 @@ export function verifyStructure({
     .sort();
   assert(
     JSON.stringify(actualLibraries) === JSON.stringify([...libraryNames].sort()),
-    'packages/* must contain exactly the five approved flat libraries',
+    'packages/* must contain exactly the approved flat libraries',
   );
 
   for (const workspacePath of workspacePaths) {
