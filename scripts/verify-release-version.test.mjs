@@ -7,7 +7,7 @@ import test from 'node:test';
 
 import { verifyReleaseVersion } from './verify-release-version.mjs';
 
-const packageNames = ['rest-client', 'db', 'stub', 'core', 'test'];
+const packageNames = ['rest-client', 'db', 'stub', 'core', 'test', 'test-browser'];
 const root = new URL('..', import.meta.url).pathname;
 
 test('the repository release contract accepts aligned workspace manifests', () => {

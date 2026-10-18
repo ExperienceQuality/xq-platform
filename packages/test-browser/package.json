@@ -1,0 +1,52 @@
+{
+  "name": "@experiencequality/test-browser",
+  "version": "1.0.3",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ExperienceQuality/node-test-kit.git",
+    "directory": "packages/test-browser"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "type": "module",
+  "description": "A platform-owned Playwright foundation for browser functional E2E tests.",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "check": "tsc -p tsconfig.test.json --noEmit",
+    "test": "pnpm --dir ../.. exec vitest run --config vitest.config.ts packages/test-browser/test"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@experiencequality/core": "workspace:*",
+    "@experiencequality/db": "workspace:*",
+    "@experiencequality/rest-client": "workspace:*",
+    "@experiencequality/stub": "workspace:*",
+    "pactum": "^3.9.1",
+    "tsx": "^4.23.15"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.64 <2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ]
+}

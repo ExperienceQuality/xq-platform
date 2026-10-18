@@ -14,7 +14,9 @@ const packageNames = [
   '@experiencequality/stub',
   '@experiencequality/core',
   '@experiencequality/test',
+  '@experiencequality/test-browser',
 ];
+const documentedBrowserSubpaths = ['./config', './package.json'];
 const documentedTestSubpaths = [
   './vitest/config',
   './cucumber',
@@ -72,6 +74,7 @@ try {
             ]),
           ),
           '@cucumber/cucumber': '^13.2.1',
+          '@playwright/test': '^1.64.0',
           vitest: '^4.0.0',
           typescript: '^5.9.0',
           '@types/node': '^24.0.0',
@@ -299,11 +302,22 @@ Then('response JSON at {string} contains:', async function (this: ResponseWorld,
     run(process.execPath, ['--input-type=module', '-e', importExpression], consumer);
   }
 
+  for (const subpath of documentedBrowserSubpaths) {
+    const specifier = `@experiencequality/test-browser${subpath.slice(1)}`;
+    const importExpression =
+      subpath === './package.json'
+        ? `const packageJson = (await import(${JSON.stringify(specifier)}, { with: { type: 'json' } })).default; if (packageJson.name !== '@experiencequality/test-browser') throw new Error('unexpected packed package metadata')`
+        : `await import(${JSON.stringify(specifier)})`;
+    run(process.execPath, ['--input-type=module', '-e', importExpression], consumer);
+  }
+
   // Given the package exposes an explicit export map,
   // When an undocumented source or missing subpath is requested,
   // Then Node must reject the import instead of leaking an internal file.
   await assertImportFails(consumer, '@experiencequality/test/src/index.js');
   await assertImportFails(consumer, '@experiencequality/test/not-public');
+  await assertImportFails(consumer, '@experiencequality/test-browser/src/index.js');
+  await assertImportFails(consumer, '@experiencequality/test-browser/not-public');
 
   let orderRequests = 0;
   const api = createServer((_request, response) => {

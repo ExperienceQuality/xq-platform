@@ -29,6 +29,17 @@ try {
 }
 if (validationError) throw validationError;
 
+run('pnpm', [
+  '--filter',
+  '@experiencequality/showcase-browser-e2e',
+  'exec',
+  'playwright',
+  'install',
+  ...(process.platform === 'linux' ? ['--with-deps'] : []),
+  'chromium',
+]);
+run('pnpm', ['run', 'test:e2e:browser']);
+
 run('pnpm', ['run', 'verify:packages']);
 
 function run(command, args, options = {}) {

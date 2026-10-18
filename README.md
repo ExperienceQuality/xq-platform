@@ -2,7 +2,7 @@
 
 Vitest-based foundation for backend functional and API E2E testing.
 
-The repository is a private pnpm workspace containing five internal consumer
+The repository is a private pnpm workspace containing six internal consumer
 packages. Consumer-facing packages and platform documentation are split into
 focused documents:
 
@@ -13,6 +13,7 @@ focused documents:
 | Node Cucumber consumer guide              | [docs/consumer-guide.md](docs/consumer-guide.md)   |
 | TypeScript development and release checks | [docs/development.md](docs/development.md)         |
 | Node test package internals               | [packages/test/README.md](packages/test/README.md) |
+| Playwright browser test package           | [packages/test-browser/README.md](packages/test-browser/README.md) |
 | Release and repository policy             | [docs/release-policy.md](docs/release-policy.md)   |
 
 ## Quick start
@@ -62,8 +63,8 @@ only from successful Test runs on `main` and publishes the latest report as
 `index.html` at the site root. Failed runs keep their artifact for diagnosis
 but do not replace the last successful Pages report.
 
-The current publishable package release is `1.0.3`. The five internal
+The current publishable package release is `1.0.3`. The six internal
 `@experiencequality/*` packages are released together at one exact
 `MAJOR.MINOR.PATCH` version from the private workspace and published to the
-company GitHub Packages npm registry; the root workspace and `apps/backend-e2e`
-are not published.
+company GitHub Packages npm registry; the root workspace and `apps/` are not
+published.

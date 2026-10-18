@@ -1,0 +1,19 @@
+{
+  "name": "@experiencequality/showcase-browser-e2e",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc -p tsconfig.json --noEmit",
+    "test": "playwright test"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@experiencequality/test-browser": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0"
+  }
+}

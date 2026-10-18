@@ -17,6 +17,10 @@ const simpleLibraryProjects = [
     root: './packages/core',
     test: { name: 'core', environment: 'node', include: ['test/**/*.test.ts'] },
   },
+  {
+    root: './packages/test-browser',
+    test: { name: 'test-browser', environment: 'node', include: ['test/**/*.test.ts'] },
+  },
 ];
 
 export default defineConfig({ test: { projects: simpleLibraryProjects } });

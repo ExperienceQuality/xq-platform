@@ -36,6 +36,35 @@ test('creates a routine', async ({ kit }) => {
 
 `@experiencequality/test/vitest` creates one isolated run context per test, clears that test's stub interactions after it, and closes worker-scoped database clients. `@experiencequality/test/vitest/config` starts the configured mock server and optional backend in global setup.
 
+## `@experiencequality/test-browser`
+
+Playwright browser facade mirroring the Vitest contract:
+
+- `@experiencequality/test-browser` exports Playwright `expect`, extended `test` with a `kit` fixture, and `BrowserTestKit` (`api`/`rest`, `stub`, `db`, `run`).
+- `@experiencequality/test-browser/config` exports `defineConfig(options?)` accepting the same `application`, `databases`, and `mock` kit options plus any Playwright `PlaywrightTestConfig`. It enforces `fullyParallel: true`, `retries: 0`, a self-contained HTML report at `playwright-report/index.html`, and failure-retained screenshots/traces/videos; consumers override any Playwright key and own `projects`.
+- The kit lifecycle runs in Playwright `globalSetup`: the pactum mock and optional backend start once per run, and the payload reaches workers through `NODE_TEST_KIT` environment propagation.
+
+```ts
+import { defineConfig } from '@experiencequality/test-browser/config';
+
+export default defineConfig({
+  application: { command: 'npm run preview:test', url: 'http://127.0.0.1:4173/' },
+  testDir: './tests/browser',
+  projects: [{ name: 'chromium', use: { browserName: 'chromium' } }],
+});
+```
+
+```ts
+import { expect, test } from '@experiencequality/test-browser';
+
+test('flow', async ({ page, kit }) => {
+  await kit.stub.addInteraction({ /* ... */ });
+  await page.goto(kit.run.backendUrl ?? '/');
+});
+```
+
+Peer requirement: `@playwright/test` `>=1.64 <2`, installed by the consumer.
+
 ## `@experiencequality/test`
 
 - `@experiencequality/test/vitest` exports Vitest `expect`, extended `test`, and `NodeTestKit`.
