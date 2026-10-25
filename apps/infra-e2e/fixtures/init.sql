@@ -1,0 +1,7 @@
+CREATE TABLE messages (
+  id UUID PRIMARY KEY,
+  body TEXT NOT NULL
+);
+
+INSERT INTO messages (id, body)
+VALUES ('00000000-0000-4000-8000-000000000001', 'baseline');
