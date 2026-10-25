@@ -1,0 +1,46 @@
+{
+  "name": "@experiencequality/test-infra",
+  "version": "1.0.3",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ExperienceQuality/node-test-kit.git",
+    "directory": "packages/test-infra"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "type": "module",
+  "bin": {
+    "xq-infra": "./dist/bin/xq-infra.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "check": "tsc -p tsconfig.test.json --noEmit",
+    "test": "vitest run --config vitest.config.ts"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "license": "Apache-2.0",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "UPSTREAM.md",
+    "package.json"
+  ],
+  "dependencies": {
+    "commander": "^11.0.0",
+    "cross-spawn": "7.0.6",
+    "fs-extra": "^11.1.1",
+    "uuid": "^9.0.0",
+    "which": "^2.0.2",
+    "yaml": "^2.3.1"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
+    "@types/fs-extra": "^11.0.0",
+    "@types/uuid": "^9.0.0",
+    "@types/which": "^2.0.0"
+  }
+}

@@ -4,7 +4,7 @@ import { dirname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const libraryNames = ['rest-client', 'db', 'stub', 'core', 'test', 'test-browser'];
+const libraryNames = ['rest-client', 'db', 'stub', 'core', 'test', 'test-browser', 'test-infra'];
 const publicPackageNames = new Set(libraryNames.map((name) => `@experiencequality/${name}`));
 const expectedDependencies = new Map([
   ['rest-client', []],
@@ -29,6 +29,7 @@ const expectedDependencies = new Map([
       '@experiencequality/stub',
     ],
   ],
+  ['test-infra', []],
 ]);
 
 export function discoverWorkspaces(workspaceRoot = root) {
@@ -135,12 +136,7 @@ export function verifyStructure({
     const workspacePath = `packages/${name}`;
     const packageJson = readWorkspaceJson(workspacePath);
     const internalDependencies = Object.keys(packageJson.dependencies ?? {}).filter((dependency) =>
-      [
-        '@experiencequality/core',
-        '@experiencequality/db',
-        '@experiencequality/rest-client',
-        '@experiencequality/stub',
-      ].includes(dependency),
+      publicPackageNames.has(dependency),
     );
     assert(
       JSON.stringify(internalDependencies.sort()) ===
@@ -203,6 +199,35 @@ export function verifyStructure({
   assert(
     facade.peerDependenciesMeta?.['@cucumber/cucumber']?.optional === true,
     '@experiencequality/test Cucumber peer must remain optional',
+  );
+
+  const infra = readWorkspaceJson('packages/test-infra');
+  assert(infra.type === 'module', 'packages/test-infra must be an ES module package');
+  assert(
+    infra.bin?.['xq-infra'] === './dist/bin/xq-infra.js',
+    'packages/test-infra must map xq-infra to ./dist/bin/xq-infra.js',
+  );
+  assert(infra.scripts?.build === 'tsc -b', 'packages/test-infra must build with tsc -b');
+  assert(
+    infra.scripts?.check === 'tsc -p tsconfig.test.json --noEmit',
+    'packages/test-infra must type-check tests with tsc -p tsconfig.test.json --noEmit',
+  );
+  assert(
+    infra.scripts?.test === 'vitest run --config vitest.config.ts',
+    'packages/test-infra must run vitest with its local config',
+  );
+  assert(
+    existsSync(resolve(workspaceRoot, 'packages/test-infra/src/bin/xq-infra.ts')),
+    'packages/test-infra must own src/bin/xq-infra.ts',
+  );
+  const rootTsConfig = readJsonAt(workspaceRoot, 'tsconfig.json');
+  assert(
+    rootTsConfig.references?.some((reference) => reference.path === './packages/test-infra'),
+    'root tsconfig.json must reference packages/test-infra',
+  );
+  assert(
+    rootPackage.scripts?.test?.includes('--filter @experiencequality/test-infra'),
+    'root test script must include @experiencequality/test-infra',
   );
 
   for (const legacyRoot of ['src', 'test', 'demo']) {

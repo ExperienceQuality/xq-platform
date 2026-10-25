@@ -20,7 +20,9 @@ pnpm run verify:packages
 ```
 
 Build output goes to each package's ignored `dist/` directory. Archive checks
-are validation only; they do not publish packages.
+are validation only; they do not publish packages. Each archive-check run packs
+into a new `artifacts/packages-<random>/` subdirectory, so earlier run outputs
+and preexisting archives are preserved rather than overwritten.
 
 The internal release packages are:
 
@@ -30,9 +32,10 @@ The internal release packages are:
 - `@experiencequality/core`
 - `@experiencequality/test`
 - `@experiencequality/test-browser`
+- `@experiencequality/test-infra`
 
-The root workspace and `apps/` remain private. The six publishable packages
-currently use version `1.0.3`; release all six internal packages at the same
+The root workspace and `apps/` remain private. The seven publishable packages
+currently use version `1.0.3`; release all seven internal packages at the same
 `MAJOR.MINOR.PATCH` version, and keep their internal dependency versions exact
 and aligned. Packages are published to the company GitHub Packages npm
 registry, not the public npm registry. The release workflow uses the
@@ -40,6 +43,21 @@ repository `GITHUB_TOKEN`; push a `vMAJOR.MINOR.PATCH` tag from `main` after
 the release PR is merged. The current package contract requires Node.js 24 or
 newer, Vitest 4 or newer, and `@cucumber/cucumber` 13.2.x when the optional
 Cucumber integration is used.
+
+`@experiencequality/test-infra` is a TypeScript source package compiled to ESM
+in `dist/` and built through the root project reference; it ships a compiled
+`xq-infra` CLI and needs no TypeScript or Vitest runtime in the consumer. It has
+no public module entrypoint and no deep-import compatibility guarantee. Unit
+tests mock spawned processes, while CLI tests execute the real compiled bin in
+a subprocess and the archive verifier exercises an installed-package consumer
+(which downloads the package's npm dependencies) — none of it needs a Docker
+daemon or a container-registry login:
+
+```bash
+pnpm --filter @experiencequality/test-infra run test
+pnpm --filter @experiencequality/test-infra exec vitest run --config vitest.config.ts test/cli.test.ts
+node scripts/verify-infra-package.mjs --archive <absolute-tarball-path> --consumer-smoke
+```
 
 ## Cucumber report and CI publication
 
@@ -74,7 +92,7 @@ deployment job. If this setting is missing, `actions/deploy-pages` fails with a
 
 ### Idempotent package publication
 
-The release workflow verifies that all six package manifests and internal
+The release workflow verifies that all seven package manifests and internal
 dependency ranges match the routed tag version before publication. Its publish
 step checks each exact package/version in dependency order, skips versions
 already present in GitHub Packages, and publishes only missing versions. A
