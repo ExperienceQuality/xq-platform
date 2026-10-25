@@ -1,0 +1,15 @@
+name: postgres
+image: postgres
+tag: 16-alpine
+environment:
+  POSTGRES_USER: xq_e2e
+  POSTGRES_PASSWORD: xq_e2e_local_only
+  POSTGRES_DB: messages
+volumes:
+  - /var/lib/postgresql/data
+  - ./fixtures/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+healthcheck:
+  test: ['CMD-SHELL', 'pg_isready -U xq_e2e -d messages']
+  interval: 2s
+  timeout: 5s
+  retries: 30

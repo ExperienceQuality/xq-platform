@@ -6,6 +6,7 @@
     { "path": "./packages/stub" },
     { "path": "./packages/core" },
     { "path": "./packages/test" },
-    { "path": "./packages/test-browser" }
+    { "path": "./packages/test-browser" },
+    { "path": "./packages/test-infra" }
   ]
 }

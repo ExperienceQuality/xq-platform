@@ -17,6 +17,7 @@ test('plans missing packages in dependency order and skips exact versions', () =
     ['@experiencequality/core', null],
     ['@experiencequality/test', null],
     ['@experiencequality/test-browser', null],
+    ['@experiencequality/test-infra', null],
   ]);
 
   const plan = createPublishPlan({
@@ -34,6 +35,7 @@ test('plans missing packages in dependency order and skips exact versions', () =
       { action: 'publish', name: '@experiencequality/core' },
       { action: 'publish', name: '@experiencequality/test' },
       { action: 'publish', name: '@experiencequality/test-browser' },
+      { action: 'publish', name: '@experiencequality/test-infra' },
     ],
   );
 });
@@ -60,6 +62,7 @@ test('publishes only missing packages in plan order', () => {
     '@experiencequality/core',
     '@experiencequality/test',
     '@experiencequality/test-browser',
+    '@experiencequality/test-infra',
   ]);
 });
 

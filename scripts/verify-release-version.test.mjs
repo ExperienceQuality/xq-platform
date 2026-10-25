@@ -7,7 +7,7 @@ import test from 'node:test';
 
 import { verifyReleaseVersion } from './verify-release-version.mjs';
 
-const packageNames = ['rest-client', 'db', 'stub', 'core', 'test', 'test-browser'];
+const packageNames = ['rest-client', 'db', 'stub', 'core', 'test', 'test-browser', 'test-infra'];
 const root = new URL('..', import.meta.url).pathname;
 
 test('the repository release contract accepts aligned workspace manifests', () => {
@@ -38,6 +38,28 @@ test('the release contract rejects unsupported internal dependency ranges', () =
     () => verifyReleaseVersion('1.0.3', fixtureRoot),
     /core\/package\.json declares @experiencequality\/rest-client at "\^1\.0\.3"; expected workspace:\* in the source manifest/,
   );
+  rmSync(fixtureRoot, { recursive: true, force: true });
+});
+
+test('the release contract rejects a test-infra version mismatch', () => {
+  const fixtureRoot = createFixture();
+  writePackage(fixtureRoot, 'test-infra', { version: '1.0.4' });
+
+  assert.throws(
+    () => verifyReleaseVersion('1.0.3', fixtureRoot),
+    /test-infra\/package\.json has version "1\.0\.4"; expected 1\.0\.3/,
+  );
+  rmSync(fixtureRoot, { recursive: true, force: true });
+});
+
+test('the release contract rejects a missing test-infra manifest', () => {
+  const fixtureRoot = mkdtempSync(join(tmpdir(), 'xq-release-fixture-'));
+  for (const packageName of packageNames) {
+    if (packageName === 'test-infra') continue;
+    writePackage(fixtureRoot, packageName);
+  }
+
+  assert.throws(() => verifyReleaseVersion('1.0.3', fixtureRoot), /could not read .*test-infra/);
   rmSync(fixtureRoot, { recursive: true, force: true });
 });
 

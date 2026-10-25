@@ -3,7 +3,15 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const publishablePackages = ['rest-client', 'db', 'stub', 'core', 'test', 'test-browser'];
+const publishablePackages = [
+  'rest-client',
+  'db',
+  'stub',
+  'core',
+  'test',
+  'test-browser',
+  'test-infra',
+];
 const internalPackageNames = new Set(
   publishablePackages.map((name) => `@experiencequality/${name}`),
 );

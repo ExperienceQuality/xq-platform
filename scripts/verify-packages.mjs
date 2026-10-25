@@ -5,6 +5,11 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import {
+  assertInfraArchiveContents,
+  inspectInfraArchive,
+  verifyInfraConsumer,
+} from './verify-infra-package.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const artifacts = resolve(root, 'artifacts');
@@ -15,6 +20,7 @@ const packageNames = [
   '@experiencequality/core',
   '@experiencequality/test',
   '@experiencequality/test-browser',
+  '@experiencequality/test-infra',
 ];
 const documentedBrowserSubpaths = ['./config', './package.json'];
 const documentedTestSubpaths = [
@@ -30,17 +36,17 @@ const pnpmStore = resolve(consumer, '.pnpm-store');
 
 try {
   run('pnpm', ['run', 'build'], root);
-  await rm(artifacts, { recursive: true, force: true });
   await mkdir(artifacts, { recursive: true });
+  const artifactRun = await mkdtemp(join(artifacts, 'packages-'));
 
   for (const packageName of packageNames) {
-    run('pnpm', ['--filter', packageName, 'pack', '--pack-destination', artifacts], root);
+    run('pnpm', ['--filter', packageName, 'pack', '--pack-destination', artifactRun], root);
   }
 
-  const archives = (await readdir(artifacts))
+  const archives = (await readdir(artifactRun))
     .filter((name) => name.endsWith('.tgz'))
     .sort()
-    .map((name) => resolve(artifacts, name));
+    .map((name) => resolve(artifactRun, name));
   if (archives.length !== packageNames.length) {
     throw new Error(`expected ${packageNames.length} package archives, found ${archives.length}`);
   }
@@ -57,6 +63,17 @@ try {
   for (const archive of archives) {
     await assertPackedPackageContract(archive);
   }
+
+  const infraArchive = archiveByPackageName['@experiencequality/test-infra'];
+  if (!infraArchive) throw new Error('missing @experiencequality/test-infra archive');
+  const infraSourceManifest = JSON.parse(
+    await readFile(resolve(root, 'packages/test-infra/package.json'), 'utf8'),
+  );
+  assertInfraArchiveContents({
+    ...inspectInfraArchive(infraArchive),
+    expectedVersion: infraSourceManifest.version,
+  });
+  await verifyInfraConsumer(infraArchive);
 
   await writeFile(
     join(consumer, 'package.json'),
@@ -245,12 +262,17 @@ Then('response JSON at {string} contains:', async function (this: ResponseWorld,
   // When each public package root is imported,
   // Then package resolution must work without workspace links.
   for (const packageName of packageNames) {
+    // The CLI-only infra package has no root module export; resolve its manifest instead.
+    const specifier =
+      packageName === '@experiencequality/test-infra'
+        ? '@experiencequality/test-infra/package.json'
+        : packageName;
     run(
       process.execPath,
       [
         '--input-type=module',
         '-e',
-        `if (!import.meta.resolve(${JSON.stringify(packageName)})) throw new Error('package did not resolve')`,
+        `if (!import.meta.resolve(${JSON.stringify(specifier)})) throw new Error('package did not resolve')`,
       ],
       consumer,
     );
@@ -365,6 +387,7 @@ Then('response JSON at {string} contains:', async function (this: ResponseWorld,
   console.log(
     `verified ${archives.length} archives in fresh NodeNext/Vitest and Cucumber consumers`,
   );
+  console.log(`packed archives retained in ${artifactRun}`);
 } finally {
   await rm(consumer, { recursive: true, force: true });
 }

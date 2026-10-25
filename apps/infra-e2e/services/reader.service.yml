@@ -1,0 +1,24 @@
+name: reader
+image: xq-infra-e2e
+tag: __XQ_E2E_TAG__
+ports:
+  - '127.0.0.1::3000'
+environment:
+  SERVICE_ROLE: reader
+  DATABASE_URL: postgres://xq_e2e:xq_e2e_local_only@postgres:5432/messages
+depends_on:
+  - postgres
+healthcheck:
+  test:
+    [
+      'CMD',
+      'node',
+      '-e',
+      'fetch("http://127.0.0.1:3000/health").then((r)=>process.exit(r.status===200?0:1)).catch(()=>process.exit(1))',
+    ]
+  interval: 2s
+  timeout: 5s
+  retries: 60
+routes:
+  - methods: ['GET']
+    paths: ['/messages']

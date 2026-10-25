@@ -19,7 +19,7 @@ package metadata also identifies its workspace directory.
 
 ## Packages and registry
 
-The publishable set is the six `@experiencequality/*` packages:
+The publishable set is the seven `@experiencequality/*` packages:
 
 1. `@experiencequality/rest-client`
 2. `@experiencequality/db`
@@ -27,8 +27,9 @@ The publishable set is the six `@experiencequality/*` packages:
 4. `@experiencequality/core`
 5. `@experiencequality/test`
 6. `@experiencequality/test-browser`
+7. `@experiencequality/test-infra`
 
-All six versions must remain the same `MAJOR.MINOR.PATCH` value. Their
+All seven versions must remain the same `MAJOR.MINOR.PATCH` value. Their
 `publishConfig` points to `https://npm.pkg.github.com`, and the publish job
 uses the repository-provided GitHub token with `packages: write`. The root
 workspace and `apps/` are private and are not published.
@@ -49,12 +50,15 @@ verification, the publish job runs these commands in order:
 @experiencequality/stub
 @experiencequality/core
 @experiencequality/test
+@experiencequality/test-browser
+@experiencequality/test-infra
 ```
 
 The order follows the dependency graph: `core` depends on `rest-client` and
-`stub`, while `test` depends on `core`, `db`, `rest-client`, and `stub`. The
-workflow builds before publishing and does not publish the root workspace or
-`apps/backend-e2e`.
+`stub`, while `test` and `test-browser` depend on `core`, `db`, `rest-client`,
+and `stub`. `test-infra` has no internal dependencies and is published last.
+The workflow builds before publishing and does not publish the root workspace
+or `apps/backend-e2e`.
 
 ## Retry and recovery
 
@@ -97,15 +101,22 @@ does not assert one.
 
 ## Runtime support
 
-The current package contract requires Node.js 24 or newer and Vitest 4 or
-newer. The optional Cucumber peer range is `>=13.2.1 <14`.
+All seven packages require Node.js 24 or newer. Vitest 4 or newer applies to
+the `test` Vitest adapter; the `test-browser` facade instead requires its
+Playwright peer (`@playwright/test >=1.64 <2`). The compiled `test-infra` CLI
+has no TypeScript or Vitest runtime requirement. The optional Cucumber peer
+range is `>=13.2.1 <14`.
 
 ## Open ownership and legal decisions
 
-No `LICENSE` file, legal entity, maintainer contact, support address, funding
-recipient, or copyright-holder statement is present in the repository evidence
-reviewed for this policy. Those fields remain intentionally unset. Before a
-public distribution is considered, the maintainer should explicitly decide:
+No repository-wide `LICENSE` file, legal entity, maintainer contact, support
+address, funding recipient, or copyright-holder statement is present in the
+repository evidence reviewed for this policy. One package carries a
+package-scoped license: `packages/test-infra` retains the upstream Apache-2.0
+`LICENSE` and `UPSTREAM.md` provenance (original author credited; migration did
+not transfer ownership). Those package files do not license the rest of the
+repository. Before a public distribution is considered, the maintainer should
+explicitly decide:
 
 - the copyright holder and license to add;
 - the accountable engineering/release owner and support channel;
