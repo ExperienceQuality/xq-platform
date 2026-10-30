@@ -1,0 +1,11 @@
+# @experiencequality/test-browser
+
+## 1.0.5
+
+### Patch Changes
+
+- d83a5a0: Release the browser testing facade and Docker test-environment CLI as part of the first Changesets-managed platform release.
+- @experiencequality/core@1.0.5
+  - @experiencequality/db@1.0.5
+  - @experiencequality/rest-client@1.0.5
+  - @experiencequality/stub@1.0.5

@@ -200,7 +200,7 @@ importers:
   apps/backend-e2e:
     dependencies:
       '@experiencequality/test':
-        specifier: 1.0.4
+        specifier: 1.0.5
         version: link:../../packages/test
       express:
         specifier: ^5.2.1
