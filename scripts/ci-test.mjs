@@ -39,6 +39,7 @@ run('pnpm', [
   'chromium',
 ]);
 run('pnpm', ['run', 'test:e2e:browser']);
+run('pnpm', ['run', 'test:e2e:infra']);
 
 run('pnpm', ['run', 'verify:packages']);
 

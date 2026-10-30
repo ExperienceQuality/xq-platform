@@ -32,6 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           persist-credentials: false
           ref: ${{ inputs.ref || github.ref }}
       - uses: pnpm/action-setup@v4
@@ -42,6 +43,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Verify changeset for package changes
+        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')
+        run: pnpm exec changeset status --since origin/${{ github.base_ref }}
       - run: pnpm run lint
       - run: pnpm run format:check
       - run: pnpm run check
+      - run: pnpm run test:release

@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { publishablePackageNames as packageNames } from './publishable-packages.mjs';
 import {
   assertInfraArchiveContents,
   inspectInfraArchive,
@@ -13,15 +14,6 @@ import {
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const artifacts = resolve(root, 'artifacts');
-const packageNames = [
-  '@experiencequality/rest-client',
-  '@experiencequality/db',
-  '@experiencequality/stub',
-  '@experiencequality/core',
-  '@experiencequality/test',
-  '@experiencequality/test-browser',
-  '@experiencequality/test-infra',
-];
 const documentedBrowserSubpaths = ['./config', './package.json'];
 const documentedTestSubpaths = [
   './vitest/config',

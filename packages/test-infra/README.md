@@ -20,9 +20,6 @@ package-specific credential is required.
 pnpm add --save-dev @experiencequality/test-infra
 ```
 
-`1.0.3` is the first platform-scope version; it has not been published yet, so
-the command above applies only after the release workflow has run.
-
 Requires Node.js 24 or newer. Docker is required only for the container
 lifecycle commands (`up`, `down`, `logs`); `generate` runs without Docker. No
 Vitest or TypeScript peer is needed — consumers invoke the compiled `dist` CLI.

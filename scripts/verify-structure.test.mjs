@@ -15,6 +15,7 @@ test('discovers the approved libraries and applications through pnpm', () => {
     '@experiencequality/rest-client',
     '@experiencequality/showcase-backend-e2e',
     '@experiencequality/showcase-browser-e2e',
+    '@experiencequality/showcase-infra-e2e',
     '@experiencequality/stub',
     '@experiencequality/test',
     '@experiencequality/test-browser',
@@ -103,7 +104,22 @@ function createLibraryManifest(name) {
   const manifest = {
     name: `@experiencequality/${name}`,
     version: '1.0.3',
+    repository: {
+      type: 'git',
+      url: 'https://github.com/ExperienceQuality/xq-platform.git',
+      directory: `packages/${name}`,
+    },
     type: 'module',
+    files: ['dist', 'package.json'],
+    exports: {
+      '.': { types: './dist/index.d.ts', import: './dist/index.js' },
+    },
+    scripts: {
+      build: 'tsc -b',
+      check: 'tsc -p tsconfig.test.json --noEmit',
+      test: 'vitest run',
+    },
+    engines: { node: '>=24' },
     publishConfig: { registry: 'https://npm.pkg.github.com' },
   };
   const internalDependencies = FIXTURE_INTERNAL_DEPENDENCIES[name];
@@ -121,6 +137,7 @@ function createLibraryManifest(name) {
     manifest.peerDependenciesMeta = { '@cucumber/cucumber': { optional: true } };
   }
   if (name === 'test-infra') {
+    delete manifest.exports;
     manifest.bin = { 'xq-infra': './dist/bin/xq-infra.js' };
     manifest.scripts = {
       build: 'tsc -b',
@@ -331,4 +348,27 @@ test('rejects a root test script missing the test-infra selector', (t) => {
   });
 
   assert.throws(verifyFixture(fixtureRoot), /must include @experiencequality\/test-infra/);
+});
+
+test('rejects a package manifest with the wrong repository metadata', (t) => {
+  const fixtureRoot = createFixtureRoot();
+  t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
+
+  mutateJson(join(fixtureRoot, 'packages/core/package.json'), (manifest) => {
+    manifest.repository.url = 'https://github.com/ExperienceQuality/node-test-kit.git';
+  });
+
+  assert.throws(verifyFixture(fixtureRoot), /must reference the xq-platform repository/);
+});
+
+test('rejects a library manifest without a public entrypoint', (t) => {
+  const fixtureRoot = createFixtureRoot();
+  t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
+
+  mutateJson(join(fixtureRoot, 'packages/core/package.json'), (manifest) => {
+    delete manifest.exports;
+    delete manifest.bin;
+  });
+
+  assert.throws(verifyFixture(fixtureRoot), /must declare a typed package entrypoint or CLI bin/);
 });

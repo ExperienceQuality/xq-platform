@@ -3,9 +3,12 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import {
+  publishablePackages as libraryNames,
+  publishablePackageNameSet as publicPackageNames,
+} from './publishable-packages.mjs';
+
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const libraryNames = ['rest-client', 'db', 'stub', 'core', 'test', 'test-browser', 'test-infra'];
-const publicPackageNames = new Set(libraryNames.map((name) => `@experiencequality/${name}`));
 const expectedDependencies = new Map([
   ['rest-client', []],
   ['db', []],
@@ -112,15 +115,55 @@ export function verifyStructure({
   for (const workspacePath of workspacePaths) {
     const packageJson = readWorkspaceJson(workspacePath);
     if (workspacePath.startsWith('packages/')) {
+      const packageDirectory = workspacePath.split(sep).at(-1);
+      const packagePath = `packages/${packageDirectory}`;
       assert(packageJson.private !== true, `${workspacePath} must be publishable`);
       assert(
         publicPackageNames.has(packageJson.name),
         `${workspacePath} has an unexpected public package name`,
       );
       assert(
+        /^@experiencequality\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(packageJson.name),
+        `${workspacePath} must use the @experiencequality scope and kebab-case`,
+      );
+      assert(packageJson.type === 'module', `${workspacePath} must be an ES module package`);
+      assert(packageJson.engines?.node === '>=24', `${workspacePath} must declare Node.js >=24`);
+      assert(
+        packageJson.repository?.url === 'https://github.com/ExperienceQuality/xq-platform.git',
+        `${workspacePath} must reference the xq-platform repository`,
+      );
+      assert(
+        packageJson.repository?.directory === packagePath,
+        `${workspacePath} must declare repository.directory ${packagePath}`,
+      );
+      assert(
         packageJson.publishConfig?.registry === 'https://npm.pkg.github.com',
         `${workspacePath} must publish to the company npm registry`,
       );
+      assert(
+        Array.isArray(packageJson.files) &&
+          packageJson.files.includes('dist') &&
+          packageJson.files.includes('package.json'),
+        `${workspacePath} must publish dist and package.json`,
+      );
+      assert(
+        typeof packageJson.scripts?.build === 'string' &&
+          typeof packageJson.scripts?.test === 'string',
+        `${workspacePath} must define build and test scripts`,
+      );
+      assert(
+        packageJson.exports?.['.'] !== undefined || packageJson.bin !== undefined,
+        `${workspacePath} must declare a typed package entrypoint or CLI bin`,
+      );
+      if (packageJson.bin !== undefined) {
+        assert(packageJson.exports === undefined, `${workspacePath} must be a CLI-only package`);
+      } else {
+        assert(
+          typeof packageJson.exports['.'].types === 'string' &&
+            typeof packageJson.exports['.'].import === 'string',
+          `${workspacePath} must expose typed ESM root exports`,
+        );
+      }
     } else {
       assert(packageJson.private === true, `${workspacePath} must remain private`);
     }

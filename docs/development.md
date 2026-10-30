@@ -35,14 +35,17 @@ The internal release packages are:
 - `@experiencequality/test-infra`
 
 The root workspace and `apps/` remain private. The seven publishable packages
-currently use version `1.0.3`; release all seven internal packages at the same
-`MAJOR.MINOR.PATCH` version, and keep their internal dependency versions exact
-and aligned. Packages are published to the company GitHub Packages npm
-registry, not the public npm registry. The release workflow uses the
-repository `GITHUB_TOKEN`; push a `vMAJOR.MINOR.PATCH` tag from `main` after
-the release PR is merged. The current package contract requires Node.js 24 or
-newer, Vitest 4 or newer, and `@cucumber/cucumber` 13.2.x when the optional
-Cucumber integration is used.
+stay in one fixed `MAJOR.MINOR.PATCH` group, with exact internal dependencies
+aligned automatically by Changesets. Packages are published to the company
+GitHub Packages npm registry, not the public npm registry. Contributors record
+consumer-facing release intent with `pnpm changeset`; package source, tests,
+configs, and manifest changes require a changeset in pull requests unless they
+are documentation-only or the generated release branch. Maintainers can inspect
+pending releases with `pnpm run changeset:status`. Merging a generated Version
+Packages PR authorizes the release workflow to validate and publish the exact
+merge commit. The package contract requires Node.js 24 or newer, Vitest 4 or
+newer, and `@cucumber/cucumber` 13.2.x when the optional Cucumber integration
+is used.
 
 `@experiencequality/test-infra` is a TypeScript source package compiled to ESM
 in `dist/` and built through the root project reference; it ships a compiled
@@ -90,11 +93,13 @@ intended. The workflow grants `pages: write` and `id-token: write` only to its
 deployment job. If this setting is missing, `actions/deploy-pages` fails with a
 404 even when the report artifact was prepared successfully.
 
-### Idempotent package publication
+### Idempotent package publication and recovery
 
 The release workflow verifies that all seven package manifests and internal
-dependency ranges match the routed tag version before publication. Its publish
-step checks each exact package/version in dependency order, skips versions
-already present in GitHub Packages, and publishes only missing versions. A
-local version mismatch or an npm registry/authentication error fails the
-release; it is never treated as a missing package.
+dependency ranges remain aligned before publication. Changesets publishes the
+missing planned packages; the release succeeds only after every expected
+package/version is confirmed in GitHub Packages and the single platform
+tag/GitHub Release exists. Partial package publication can be resumed from the
+same immutable `release_sha`; release-record failures use the manual
+`finalize_only` path. Authentication, permission, network, or malformed
+registry responses fail closed and are never treated as missing packages.

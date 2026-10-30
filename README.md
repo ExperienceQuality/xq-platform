@@ -6,16 +6,18 @@ The repository is a private pnpm workspace containing seven internal consumer
 packages. Consumer-facing packages and platform documentation are split into
 focused documents:
 
-| Topic                                     | Documentation                                                      |
-| ----------------------------------------- | ------------------------------------------------------------------ |
-| What this project delivers                | [docs/deliverables.md](docs/deliverables.md)                       |
-| Node/Vitest test facade usage             | [docs/test.md](docs/test.md)                                       |
-| Node Cucumber consumer guide              | [docs/consumer-guide.md](docs/consumer-guide.md)                   |
-| TypeScript development and release checks | [docs/development.md](docs/development.md)                         |
-| Node test package internals               | [packages/test/README.md](packages/test/README.md)                 |
-| Playwright browser test package           | [packages/test-browser/README.md](packages/test-browser/README.md) |
-| Docker test-environment CLI               | [packages/test-infra/README.md](packages/test-infra/README.md)     |
-| Release and repository policy             | [docs/release-policy.md](docs/release-policy.md)                   |
+| Topic                                     | Documentation                                                                                          |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| What this project delivers                | [docs/deliverables.md](docs/deliverables.md)                                                           |
+| Node/Vitest test facade usage             | [docs/test.md](docs/test.md)                                                                           |
+| Node Cucumber consumer guide              | [docs/consumer-guide.md](docs/consumer-guide.md)                                                       |
+| TypeScript development and release checks | [docs/development.md](docs/development.md)                                                             |
+| Node test package internals               | [packages/test/README.md](packages/test/README.md)                                                     |
+| Playwright browser test package           | [packages/test-browser/README.md](packages/test-browser/README.md)                                     |
+| Docker test-environment CLI               | [packages/test-infra/README.md](packages/test-infra/README.md)                                         |
+| Release and repository policy             | [docs/release-policy.md](docs/release-policy.md)                                                       |
+| Repository organization                   | [docs/repository-overview.md](docs/repository-overview.md)                                             |
+| Package release architecture              | [docs/architecture/github-packages-release-spec.md](docs/architecture/github-packages-release-spec.md) |
 
 ## Quick start
 
@@ -64,7 +66,7 @@ only from successful Test runs on `main` and publishes the latest report as
 `index.html` at the site root. Failed runs keep their artifact for diagnosis
 but do not replace the last successful Pages report.
 
-The aligned source version across the seven publishable packages is `1.0.3`.
-They are released together at one exact `MAJOR.MINOR.PATCH` version from the
-private workspace and published to the company GitHub Packages npm registry;
-the root workspace and `apps/` are not published.
+The seven publishable packages are released together at one exact
+`MAJOR.MINOR.PATCH` version from the private workspace and published to the
+company GitHub Packages npm registry; the root workspace and `apps/` are not
+published.

@@ -3,10 +3,12 @@
   "version": "1.0.4",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ExperienceQuality/node-test-kit.git",
+    "url": "https://github.com/ExperienceQuality/xq-platform.git",
     "directory": "packages/db"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com" },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "type": "module",
   "exports": {
     ".": {

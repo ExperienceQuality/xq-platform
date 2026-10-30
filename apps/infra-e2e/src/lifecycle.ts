@@ -121,6 +121,8 @@ export async function ensureDocker(): Promise<void> {
 
 export async function pullBaseImages(): Promise<void> {
   for (const image of ['node:24-alpine', 'postgres:16-alpine', 'nginx:alpine']) {
+    const local = await docker(['image', 'inspect', image], { timeoutMs: 15_000 });
+    if (local.exitCode === 0) continue;
     const result = await docker(['pull', image], { timeoutMs: 300_000 });
     if (result.exitCode !== 0) {
       throw new Error(`docker pull ${image} failed: ${result.stderr || result.stdout}`);
@@ -181,11 +183,7 @@ export async function createRun(jobExitCode: number | null = null): Promise<RunC
   } else {
     const writer = await writerSpec(jobExitCode);
     const writerYaml = YAML.stringify(writer).split(IMAGE_TAG_PLACEHOLDER).join(runId);
-    await writeFile(
-      path.join(runDir, 'services', 'writer.test.service.yml'),
-      writerYaml,
-      'utf8',
-    );
+    await writeFile(path.join(runDir, 'services', 'writer.test.service.yml'), writerYaml, 'utf8');
     await rm(path.join(runDir, 'services', 'writer.service.yml'));
   }
   return run;

@@ -2,19 +2,10 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { publishablePackages, publishablePackageNameSet } from './publishable-packages.mjs';
+
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const publishablePackages = [
-  'rest-client',
-  'db',
-  'stub',
-  'core',
-  'test',
-  'test-browser',
-  'test-infra',
-];
-const internalPackageNames = new Set(
-  publishablePackages.map((name) => `@experiencequality/${name}`),
-);
+const internalPackageNames = publishablePackageNameSet;
 const versionPattern = /^\d+\.\d+\.\d+$/;
 const tagPattern = /^v(\d+\.\d+\.\d+)$/;
 

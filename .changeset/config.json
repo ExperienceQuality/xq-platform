@@ -1,0 +1,34 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [
+    [
+      "@experiencequality/rest-client",
+      "@experiencequality/db",
+      "@experiencequality/stub",
+      "@experiencequality/core",
+      "@experiencequality/test",
+      "@experiencequality/test-browser",
+      "@experiencequality/test-infra"
+    ]
+  ],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "main",
+  "changedFilePatterns": [
+    "src/**",
+    "test/**",
+    "package.json",
+    "tsconfig*.json",
+    "*.config.ts",
+    "*.config.js"
+  ],
+  "format": "prettier",
+  "privatePackages": {
+    "version": false,
+    "tag": false
+  },
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}

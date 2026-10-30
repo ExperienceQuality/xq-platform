@@ -5,7 +5,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ExperienceQuality/node-test-kit.git"
+    "url": "https://github.com/ExperienceQuality/xq-platform.git"
   },
   "packageManager": "pnpm@12.10.0",
   "description": "A platform-owned Vitest foundation for backend functional E2E tests.",
@@ -20,6 +20,10 @@
     "test:e2e": "pnpm --filter @experiencequality/showcase-backend-e2e run test",
     "test:e2e:browser": "pnpm --filter @experiencequality/showcase-browser-e2e run test",
     "test:e2e:infra": "pnpm run build && pnpm --filter @experiencequality/showcase-infra-e2e run build && pnpm --filter @experiencequality/showcase-infra-e2e run test",
+    "test:release": "node --test scripts/publishable-packages.test.mjs scripts/publish-packages.test.mjs scripts/verify-release-version.test.mjs scripts/verify-published-packages.test.mjs scripts/create-platform-release.test.mjs scripts/verify-structure.test.mjs",
+    "changeset": "changeset",
+    "changeset:status": "changeset status --since main",
+    "changeset:version": "changeset version && pnpm install --lockfile-only",
     "showcase": "pnpm --filter @experiencequality/showcase-backend-e2e run test",
     "showcase:app": "pnpm --filter @experiencequality/showcase-backend-e2e run start",
     "pack": "pnpm run verify:packages",
@@ -34,6 +38,7 @@
     "node": ">=24"
   },
   "devDependencies": {
+    "@changesets/cli": "3.0.3",
     "@cucumber/cucumber": "^13.2.1",
     "@eslint/js": "^9.39.5",
     "@types/node": "^24.0.0",

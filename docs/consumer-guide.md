@@ -6,20 +6,23 @@ platform. The application owns `.feature` files and business step definitions;
 
 ## Install the released kit
 
-The packages are internal and are published to GitHub Packages. Configure a
-read-only token in the consumer environment, not in source control:
+The packages are internal and are published to GitHub Packages. For local
+consumer development, use a GitHub PAT (classic) with `read:packages`; for
+GitHub Actions, grant the consumer repository package access and use its
+`GITHUB_TOKEN` through `NODE_AUTH_TOKEN`. Do not commit either token:
 
 ```ini
 # .npmrc (or the equivalent CI-generated user config)
-@xq:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+@experiencequality:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GH_PACKAGES_TOKEN}
 ```
 
-Install the facade and its compatible peer tools at the versions approved for
-the release. The current workspace release is `1.0.3`:
+Install the facade and its compatible peer tools at the platform version
+approved for your application. Check the repository's latest GitHub Release or
+the package versions visible in GitHub Packages:
 
 ```bash
-pnpm add --save-dev @experiencequality/test@1.0.3 @cucumber/cucumber@13.2.1 vitest@4.1.11
+pnpm add --save-dev @experiencequality/test@<platform-version> @cucumber/cucumber@13.2.1 vitest@4.1.11
 ```
 
 Consumers normally import only `@experiencequality/test`. The `@experiencequality/core`, `@experiencequality/db`,
@@ -34,7 +37,7 @@ Keep Cucumber as the runner. Create a small `cucumber.mjs` in the application:
 import { defineCucumberConfig } from '@experiencequality/test/cucumber/config';
 
 export default defineCucumberConfig({
-  steps: 'features/steps/**/*.ts'
+  steps: 'features/steps/**/*.ts',
 });
 ```
 
@@ -47,7 +50,7 @@ report is written relative to the consumer working directory at
 ```js
 export default defineCucumberConfig({
   steps: 'features/steps/**/*.ts',
-  reportPath: 'reports/cucumber.html'
+  reportPath: 'reports/cucumber.html',
 });
 ```
 
@@ -112,7 +115,7 @@ import { expectJsonTable } from '@experiencequality/test/cucumber';
 
 Then('the order response matches:', async function (table) {
   await expectJsonTable(this.api.get('/orders/123'), table, {
-    mode: 'exact'
+    mode: 'exact',
   }).expectStatus(200);
 });
 ```
@@ -130,14 +133,14 @@ When('I retrieve the order', async function () {
 Then('the customer contains:', async function (table) {
   await assertJsonTable(this.orderResponse, table, {
     mode: 'contains',
-    path: '$.customer'
+    path: '$.customer',
   });
 });
 
 Then('the first item contains:', async function (table) {
   await assertJsonTable(this.orderResponse, table, {
     mode: 'contains',
-    path: '$.items[0]'
+    path: '$.items[0]',
   });
 });
 ```
