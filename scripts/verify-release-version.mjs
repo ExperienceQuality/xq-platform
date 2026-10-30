@@ -58,11 +58,7 @@ export function verifyReleaseVersion(version, packageRoot = root) {
 
 export function resolveReleaseVersion(args, environment = process.env) {
   const context = parseArguments(args);
-  const tag =
-    context.tag ??
-    environment.RELEASE_TAG ??
-    environment.GITHUB_REF_NAME ??
-    refTag(environment.GITHUB_REF);
+  const tag = context.tag ?? environment.RELEASE_TAG ?? refTag(environment.GITHUB_REF);
   const suppliedVersion = context.version ?? environment.RELEASE_VERSION;
   const tagVersion = tag === undefined ? undefined : versionFromTag(tag);
 

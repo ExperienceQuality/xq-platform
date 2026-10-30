@@ -7,12 +7,25 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 import { publishablePackages as packageNames } from './publishable-packages.mjs';
-import { verifyReleaseVersion } from './verify-release-version.mjs';
+import { resolveReleaseVersion, verifyReleaseVersion } from './verify-release-version.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 test('the repository release contract accepts aligned workspace manifests', () => {
   const version = readManifest('rest-client').version;
   assert.doesNotThrow(() => verifyReleaseVersion(version));
+});
+
+test('release context accepts a version on a branch push', () => {
+  const version = resolveReleaseVersion(['--version', '1.0.5'], {
+    GITHUB_REF_NAME: 'main',
+    GITHUB_REF: 'refs/heads/main',
+  });
+  assert.equal(version, '1.0.5');
+});
+
+test('release context derives the version from a tag ref', () => {
+  const version = resolveReleaseVersion([], { GITHUB_REF: 'refs/tags/v1.0.5' });
+  assert.equal(version, '1.0.5');
 });
 
 test('the release contract rejects a package version mismatch', (t) => {
