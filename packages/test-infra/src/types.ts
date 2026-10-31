@@ -65,6 +65,7 @@ export interface ParsedRoute {
 
 export interface GenerateOptions {
   gateway?: boolean;
+  wiremock?: boolean;
   keepFile?: boolean;
   overrides?: { services?: Record<string, Partial<ServiceSpec>> };
 }

@@ -35,7 +35,12 @@ class ComposeGenerator {
   }
 
   async generateCompose(specPath: string, options: GenerateOptions = {}): Promise<string> {
-    const { gateway: enableGateway = true, keepFile = true, overrides = {} } = options;
+    const {
+      gateway: enableGateway = true,
+      wiremock: enableWiremock = true,
+      keepFile = true,
+      overrides = {},
+    } = options;
 
     // Read and parse XQ spec
     const spec = await this.readXQSpec(specPath);
@@ -44,7 +49,12 @@ class ComposeGenerator {
     const mergedSpec = this.applyOverrides(spec, overrides);
 
     // Generate compose object
-    const compose = await this.generateComposeObject(mergedSpec, enableGateway, keepFile);
+    const compose = await this.generateComposeObject(
+      mergedSpec,
+      enableGateway,
+      keepFile,
+      enableWiremock,
+    );
 
     // Always output to xq-compose.yml in current directory
     const finalOutputPath = path.join(process.cwd(), 'xq-compose.yml');
@@ -110,6 +120,7 @@ class ComposeGenerator {
     spec: XqSpec,
     enableGateway: boolean,
     keepFile = false,
+    enableWiremock = true,
   ): Promise<ComposeSpec> {
     const compose: ComposeSpec = {
       version: '3.8',
@@ -146,6 +157,19 @@ class ComposeGenerator {
           }
         }
       });
+    }
+
+    // Add WireMock before the gateway so the gateway can route to and wait on it.
+    // Skipped when disabled, when there are no user services, or when the user
+    // defines their own wiremock service.
+    if (
+      enableWiremock &&
+      spec.services &&
+      Object.keys(spec.services).length > 0 &&
+      spec.services['xq-wiremock'] === undefined &&
+      spec.services['wiremock'] === undefined
+    ) {
+      await this.addWiremock(compose);
     }
 
     // Add gateway if enabled
@@ -225,6 +249,66 @@ class ComposeGenerator {
     }
 
     return composeService;
+  }
+
+  async addWiremock(compose: ComposeSpec): Promise<void> {
+    const wiremockUrl = 'http://xq-wiremock:8080';
+    const envKey = 'WIREMOCK_BASE_URL';
+    const envValue = `${envKey}=${wiremockUrl}`;
+
+    // Point every user service at WireMock without overwriting a user-set value
+    for (const service of Object.values(compose.services)) {
+      if (service.environment === undefined) {
+        service.environment = { [envKey]: wiremockUrl };
+      } else if (Array.isArray(service.environment)) {
+        const hasKey = service.environment.some(
+          (entry) => entry === envKey || entry.startsWith(`${envKey}=`),
+        );
+        if (!hasKey) {
+          service.environment = [...service.environment, envValue];
+        }
+      } else if (!(envKey in service.environment)) {
+        service.environment = { ...service.environment, [envKey]: wiremockUrl };
+      }
+    }
+
+    // Pick the first free host port from 18080 upward. Host port is the
+    // second-to-last segment to cover ip:host:container mappings; bare
+    // container ports bind a random host port and don't count.
+    const usedHostPorts = new Set<number>();
+    for (const service of Object.values(compose.services)) {
+      for (const port of service.ports ?? []) {
+        const parts = String(port).split(':');
+        if (parts.length >= 2) {
+          const hostPort = parseInt(parts[parts.length - 2] ?? '', 10);
+          if (!isNaN(hostPort)) {
+            usedHostPorts.add(hostPort);
+          }
+        }
+      }
+    }
+    let wiremockPort = 18080;
+    while (usedHostPorts.has(wiremockPort)) {
+      wiremockPort++;
+    }
+
+    const wiremockService: ComposeService = {
+      image: 'wiremock/wiremock:3.13.1',
+      networks: ['xq-network'],
+      ports: [`${wiremockPort}:8080`],
+      healthcheck: {
+        test: ['CMD', 'curl', '-f', 'http://localhost:8080/__admin/health'],
+        start_period: '10s',
+      },
+    };
+
+    // Mount local stubs only when a ./wiremock directory exists at generate time
+    const wiremockDir = path.join(process.cwd(), 'wiremock');
+    if (await fs.pathExists(wiremockDir)) {
+      wiremockService.volumes = [`${wiremockDir}:/home/wiremock`];
+    }
+
+    compose.services['xq-wiremock'] = wiremockService;
   }
 
   async addGateway(

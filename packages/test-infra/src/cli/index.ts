@@ -2,9 +2,10 @@
 import { Command } from 'commander';
 import path from 'node:path';
 import fs from 'fs-extra';
+import YAML from 'yaml';
 import composeGenerator from '../services/composeGenerator.js';
 import composeInvoker from '../services/composeInvoker.js';
-import type { GenerateOptions, LogsOptions } from '../types.js';
+import type { ComposeSpec, GenerateOptions, LogsOptions } from '../types.js';
 
 export default async function main(argv: string[] = process.argv): Promise<void> {
   const pkg = JSON.parse(
@@ -28,10 +29,17 @@ export default async function main(argv: string[] = process.argv): Promise<void>
       'Path to xq YAML spec file or directory containing *.service.yml files',
     )
     .option('--no-gateway', 'Disable default gateway injection')
+    .option('--no-wiremock', 'Disable default WireMock injection')
     .option('--keep-file', 'Keep generated compose file after run')
     .option('--overrides <path>', 'Path to JSON file with overrides')
     .action(
-      async (opts: { file: string; gateway?: boolean; keepFile?: boolean; overrides?: string }) => {
+      async (opts: {
+        file: string;
+        gateway?: boolean;
+        wiremock?: boolean;
+        keepFile?: boolean;
+        overrides?: string;
+      }) => {
         const absIn = path.resolve(process.cwd(), opts.file);
         let overrides: GenerateOptions['overrides'];
         if (opts.overrides) {
@@ -47,6 +55,7 @@ export default async function main(argv: string[] = process.argv): Promise<void>
         try {
           const generateOptions: GenerateOptions = {};
           if (opts.gateway !== undefined) generateOptions.gateway = opts.gateway;
+          if (opts.wiremock !== undefined) generateOptions.wiremock = opts.wiremock;
           if (opts.keepFile !== undefined) generateOptions.keepFile = opts.keepFile;
           if (overrides !== undefined) generateOptions.overrides = overrides;
           const outPath = await composeGenerator.generateCompose(absIn, generateOptions);
@@ -86,6 +95,19 @@ export default async function main(argv: string[] = process.argv): Promise<void>
 
         await composeInvoker.up(composeFile, { pull: shouldPull });
         console.log('Services started successfully!');
+
+        // Report the WireMock endpoint when the generated compose includes it
+        try {
+          const composeDoc = YAML.parse(await fs.readFile(composeFile, 'utf8')) as ComposeSpec;
+          const wiremockPorts = composeDoc?.services?.['xq-wiremock']?.ports;
+          const mapping = Array.isArray(wiremockPorts) ? String(wiremockPorts[0] ?? '') : '';
+          const hostPort = /(\d+):\d+$/.exec(mapping)?.[1];
+          if (hostPort) {
+            console.log(`WireMock: http://localhost:${hostPort}`);
+          }
+        } catch {
+          // Compose file missing or unreadable — up already succeeded, so ignore
+        }
 
         // Detect and wait for test containers to complete
         // Try to find source directory (test-env, services, or same dir as compose file)
