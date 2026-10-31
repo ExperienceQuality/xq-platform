@@ -256,6 +256,18 @@ export async function verifyInfraConsumer(archive, { run = runProcess } = {}) {
     assert.equal(noGatewayCompose.services.db.image, 'postgres:15');
     assert.deepEqual(noGatewayCompose.services.db.ports, ['5432:5432']);
     assert.equal(noGatewayCompose.services['xq-gateway'], undefined);
+    // WireMock is attached by default even without a gateway.
+    assert.equal(noGatewayCompose.services['xq-wiremock'].image, 'wiremock/wiremock:3.13.1');
+    assert.deepEqual(noGatewayCompose.services['xq-wiremock'].ports, ['18080:8080']);
+    assert.equal(noGatewayCompose.services['xq-wiremock'].volumes, undefined);
+    assert.equal(
+      noGatewayCompose.services.api.environment.WIREMOCK_BASE_URL,
+      'http://xq-wiremock:8080',
+    );
+    assert.equal(
+      noGatewayCompose.services.db.environment.WIREMOCK_BASE_URL,
+      'http://xq-wiremock:8080',
+    );
     assert.deepEqual(noGatewayCompose.networks, { 'xq-network': { driver: 'bridge' } });
     assert(!existsSync(join(consumer, 'nginx-gateway.conf')));
 
@@ -275,6 +287,7 @@ export async function verifyInfraConsumer(archive, { run = runProcess } = {}) {
     assert.deepEqual(gatewayCompose.services['xq-gateway'].depends_on, {
       api: { condition: 'service_started' },
       db: { condition: 'service_started' },
+      'xq-wiremock': { condition: 'service_healthy' },
     });
     const nginxConf = await readFile(join(consumer, 'nginx-gateway.conf'), 'utf8');
     assert.match(nginxConf, /upstream api_upstream \{\n {4}server api:3000;\n\}/);
@@ -318,6 +331,17 @@ export async function verifyInfraConsumer(archive, { run = runProcess } = {}) {
     const overridden = parseYaml(await readFile(join(consumer, 'xq-compose.yml'), 'utf8'));
     assert.equal(overridden.services.api.image, 'node:20-alpine');
     assert.equal(overridden.services.db.image, 'postgres:15');
+
+    // --no-wiremock opts out of the default WireMock injection.
+    const noWiremock = run(bin, ['generate', '-f', specPath, '--no-gateway', '--no-wiremock'], {
+      cwd: consumer,
+      env,
+      timeout: CLI_TIMEOUT_MS,
+    });
+    assert.equal(noWiremock.status, 0, `generate --no-wiremock failed\n${noWiremock.stderr}`);
+    const noWiremockCompose = parseYaml(await readFile(join(consumer, 'xq-compose.yml'), 'utf8'));
+    assert.equal(noWiremockCompose.services['xq-wiremock'], undefined);
+    assert.equal(noWiremockCompose.services.api.environment, undefined);
 
     // Failure paths keep exit code 2.
     const missingSpec = run(bin, ['generate', '-f', join(consumer, 'missing.yaml')], {
