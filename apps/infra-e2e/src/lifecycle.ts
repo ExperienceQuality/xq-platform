@@ -244,7 +244,7 @@ export async function adjustGatewayPort(run: RunContext): Promise<void> {
   if (!gateway || gateway.image !== 'nginx:alpine') {
     throw new Error(`generated gateway missing or unexpected: ${JSON.stringify(names)}`);
   }
-  const expected = ['postgres', 'reader', 'writer', 'xq-gateway'];
+  const expected = ['postgres', 'reader', 'writer', 'xq-gateway', 'xq-wiremock'];
   if (JSON.stringify(names) !== JSON.stringify(expected)) {
     throw new Error(`expected services ${expected.join(',')}, got ${names.join(',')}`);
   }

@@ -40,7 +40,7 @@ async function teardown(run: RunContext): Promise<void> {
   const resources = await captureResources(run);
   const services = Object.keys(resources.containers).sort();
   if (services.length > 0) {
-    expect(services).toEqual(['postgres', 'reader', 'writer', 'xq-gateway']);
+    expect(services).toEqual(['postgres', 'reader', 'writer', 'xq-gateway', 'xq-wiremock']);
   }
   const downResult = await down(run);
   expect(downResult.exitCode).toBe(0);
