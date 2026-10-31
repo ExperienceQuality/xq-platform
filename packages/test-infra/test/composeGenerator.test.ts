@@ -80,7 +80,10 @@ describe('ComposeGenerator', () => {
       const webApp = compose.services['web-app'];
       expect(webApp.image).toBe('nginx:1.21');
       expect(webApp.ports).toEqual(['8080:80']);
-      expect(webApp.environment).toEqual({ NODE_ENV: 'test' });
+      expect(webApp.environment).toEqual({
+        NODE_ENV: 'test',
+        WIREMOCK_BASE_URL: 'http://xq-wiremock:8080',
+      });
       expect(webApp.networks).toEqual(['xq-network']);
 
       const apiService = compose.services['api-service'];
@@ -130,7 +133,10 @@ describe('ComposeGenerator', () => {
 
       const webApp = compose.services['web-app'];
       expect(webApp.image).toBe('nginx:1.22');
-      expect(webApp.environment).toEqual({ NODE_ENV: 'production' });
+      expect(webApp.environment).toEqual({
+        NODE_ENV: 'production',
+        WIREMOCK_BASE_URL: 'http://xq-wiremock:8080',
+      });
     });
 
     test('should write to default output path', async () => {
@@ -273,6 +279,214 @@ describe('ComposeGenerator', () => {
     });
   });
 
+  describe('wiremock injection', () => {
+    test('should inject xq-wiremock service by default', async () => {
+      const composePath = await composeGenerator.generateCompose(testSpecPath);
+      const compose = YAML.parse(await fs.readFile(composePath, 'utf8'));
+
+      const wiremock = compose.services['xq-wiremock'];
+      expect(wiremock.image).toBe('wiremock/wiremock:3.13.1');
+      expect(wiremock.ports).toEqual(['18080:8080']);
+      expect(wiremock.networks).toEqual(['xq-network']);
+      expect(wiremock.healthcheck.test).toEqual([
+        'CMD',
+        'curl',
+        '-f',
+        'http://localhost:8080/__admin/health',
+      ]);
+      expect(wiremock.volumes).toBeUndefined();
+
+      // Gateway waits on the wiremock healthcheck like any other service
+      expect(compose.services['xq-gateway'].depends_on['xq-wiremock']).toEqual({
+        condition: 'service_healthy',
+      });
+    });
+
+    test('should skip injection when wiremock option is false', async () => {
+      const composePath = await composeGenerator.generateCompose(testSpecPath, {
+        wiremock: false,
+      });
+      const compose = YAML.parse(await fs.readFile(composePath, 'utf8'));
+
+      expect(compose.services).not.toHaveProperty('xq-wiremock');
+      expect(compose.services['web-app'].environment).toEqual({ NODE_ENV: 'test' });
+      expect(compose.services['api-service'].environment).toBeUndefined();
+    });
+
+    test('should skip injection when user defines a wiremock service', async () => {
+      const spec: XqSpec = {
+        services: {
+          wiremock: {
+            image: 'wiremock/wiremock',
+            tag: '2.35.0',
+            ports: ['9999:8080'],
+          },
+          'web-app': { image: 'nginx', tag: 'alpine' },
+        },
+      };
+      const specPath = path.join(tempDir, 'user-wiremock.yaml');
+      await fs.writeFile(specPath, YAML.stringify(spec), 'utf8');
+
+      const composePath = await composeGenerator.generateCompose(specPath);
+      const compose = YAML.parse(await fs.readFile(composePath, 'utf8'));
+
+      expect(compose.services['wiremock'].image).toBe('wiremock/wiremock:2.35.0');
+      expect(compose.services['wiremock'].ports).toEqual(['9999:8080']);
+      expect(compose.services).not.toHaveProperty('xq-wiremock');
+      expect(compose.services['web-app'].environment).toBeUndefined();
+    });
+
+    test('should skip injection when user defines an xq-wiremock service', async () => {
+      const spec: XqSpec = {
+        services: {
+          'xq-wiremock': {
+            image: 'wiremock/wiremock',
+            tag: '2.35.0',
+            ports: ['9999:8080'],
+          },
+          'web-app': { image: 'nginx', tag: 'alpine' },
+        },
+      };
+      const specPath = path.join(tempDir, 'user-xq-wiremock.yaml');
+      await fs.writeFile(specPath, YAML.stringify(spec), 'utf8');
+
+      const composePath = await composeGenerator.generateCompose(specPath);
+      const compose = YAML.parse(await fs.readFile(composePath, 'utf8'));
+
+      expect(compose.services['xq-wiremock'].image).toBe('wiremock/wiremock:2.35.0');
+      expect(compose.services['xq-wiremock'].ports).toEqual(['9999:8080']);
+      expect(compose.services['web-app'].environment).toBeUndefined();
+    });
+
+    test('should inject WIREMOCK_BASE_URL into user services', async () => {
+      const spec: XqSpec = {
+        services: {
+          'record-env': {
+            image: 'node',
+            tag: '18-alpine',
+            environment: { FOO: 'bar' },
+          },
+          'array-env': {
+            image: 'node',
+            tag: '18-alpine',
+            environment: ['FOO=bar'],
+          },
+          'no-env': { image: 'node', tag: '18-alpine' },
+        },
+      };
+      const specPath = path.join(tempDir, 'env-injection.yaml');
+      await fs.writeFile(specPath, YAML.stringify(spec), 'utf8');
+
+      const composePath = await composeGenerator.generateCompose(specPath);
+      const compose = YAML.parse(await fs.readFile(composePath, 'utf8'));
+
+      expect(compose.services['record-env'].environment).toEqual({
+        FOO: 'bar',
+        WIREMOCK_BASE_URL: 'http://xq-wiremock:8080',
+      });
+      expect(compose.services['array-env'].environment).toEqual([
+        'FOO=bar',
+        'WIREMOCK_BASE_URL=http://xq-wiremock:8080',
+      ]);
+      expect(compose.services['no-env'].environment).toEqual({
+        WIREMOCK_BASE_URL: 'http://xq-wiremock:8080',
+      });
+      expect(compose.services['xq-wiremock'].environment).toBeUndefined();
+      expect(compose.services['xq-gateway'].environment).toBeUndefined();
+    });
+
+    test('should not overwrite a user-set WIREMOCK_BASE_URL', async () => {
+      const spec: XqSpec = {
+        services: {
+          'record-env': {
+            image: 'node',
+            tag: '18-alpine',
+            environment: { WIREMOCK_BASE_URL: 'http://custom-mock:9090' },
+          },
+          'array-env': {
+            image: 'node',
+            tag: '18-alpine',
+            environment: ['WIREMOCK_BASE_URL=http://custom-mock:9090'],
+          },
+        },
+      };
+      const specPath = path.join(tempDir, 'env-no-clobber.yaml');
+      await fs.writeFile(specPath, YAML.stringify(spec), 'utf8');
+
+      const composePath = await composeGenerator.generateCompose(specPath);
+      const compose = YAML.parse(await fs.readFile(composePath, 'utf8'));
+
+      expect(compose.services['record-env'].environment).toEqual({
+        WIREMOCK_BASE_URL: 'http://custom-mock:9090',
+      });
+      expect(compose.services['array-env'].environment).toEqual([
+        'WIREMOCK_BASE_URL=http://custom-mock:9090',
+      ]);
+    });
+
+    test('should pick the next free host port when 18080 is taken', async () => {
+      const spec: XqSpec = {
+        services: {
+          'web-app': {
+            image: 'nginx',
+            tag: 'alpine',
+            ports: ['18080:80', '18081:81'],
+          },
+        },
+      };
+      const specPath = path.join(tempDir, 'port-collision.yaml');
+      await fs.writeFile(specPath, YAML.stringify(spec), 'utf8');
+
+      const composePath = await composeGenerator.generateCompose(specPath);
+      const compose = YAML.parse(await fs.readFile(composePath, 'utf8'));
+
+      expect(compose.services['xq-wiremock'].ports).toEqual(['18082:8080']);
+    });
+
+    test('should treat ip-prefixed host ports as taken', async () => {
+      const spec: XqSpec = {
+        services: {
+          'web-app': {
+            image: 'nginx',
+            tag: 'alpine',
+            ports: ['127.0.0.1:18080:80'],
+          },
+        },
+      };
+      const specPath = path.join(tempDir, 'port-collision-ip.yaml');
+      await fs.writeFile(specPath, YAML.stringify(spec), 'utf8');
+
+      const composePath = await composeGenerator.generateCompose(specPath);
+      const compose = YAML.parse(await fs.readFile(composePath, 'utf8'));
+
+      expect(compose.services['xq-wiremock'].ports).toEqual(['18081:8080']);
+    });
+
+    test('should not inject xq-wiremock when services is empty', async () => {
+      const spec: XqSpec = { services: {} };
+      const specPath = path.join(tempDir, 'empty-services.yaml');
+      await fs.writeFile(specPath, YAML.stringify(spec), 'utf8');
+
+      const composePath = await composeGenerator.generateCompose(specPath);
+      const compose = YAML.parse(await fs.readFile(composePath, 'utf8'));
+
+      expect(compose.services).not.toHaveProperty('xq-wiremock');
+      expect(compose.services).not.toHaveProperty('xq-gateway');
+    });
+
+    test('should mount ./wiremock directory when it exists', async () => {
+      const wiremockDir = path.join(process.cwd(), 'wiremock');
+      await fs.ensureDir(wiremockDir);
+
+      const composePath = await composeGenerator.generateCompose(testSpecPath);
+      const compose = YAML.parse(await fs.readFile(composePath, 'utf8'));
+
+      expect(compose.services['xq-wiremock'].volumes).toEqual([
+        `${wiremockDir}:/home/wiremock`,
+      ]);
+    });
+  });
+
   describe('gateway dependency conditions', () => {
     test('should use service_healthy gateway condition when service has healthcheck', async () => {
       const spec: XqSpec = {
@@ -304,7 +518,8 @@ describe('ComposeGenerator', () => {
       const specPath = path.join(tempDir, 'basic-web-app.yaml');
       await fs.writeFile(specPath, BASIC_WEB_APP_YAML, 'utf8');
 
-      const composePath = await composeGenerator.generateCompose(specPath);
+      // Baseline fixtures capture upstream output before WireMock injection existed
+      const composePath = await composeGenerator.generateCompose(specPath, { wiremock: false });
 
       const generated = YAML.parse(await fs.readFile(composePath, 'utf8')) as ComposeSpec;
       const expected = YAML.parse(GEN_SINGLE_COMPOSE_YAML) as ComposeSpec;
@@ -325,7 +540,10 @@ describe('ComposeGenerator', () => {
       }
       await fs.writeFile(path.join(servicesDir, 'xq.config.yml'), GEN_DIR_CONFIG_YML, 'utf8');
 
-      const composePath = await composeGenerator.generateCompose(servicesDir);
+      // Baseline fixtures capture upstream output before WireMock injection existed
+      const composePath = await composeGenerator.generateCompose(servicesDir, {
+        wiremock: false,
+      });
 
       const generated = YAML.parse(await fs.readFile(composePath, 'utf8')) as ComposeSpec;
       const expected = YAML.parse(GEN_DIR_COMPOSE_YAML) as ComposeSpec;

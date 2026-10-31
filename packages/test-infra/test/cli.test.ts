@@ -99,7 +99,8 @@ describe('xq-infra CLI', () => {
       const specPath = path.join(tempDir, 'basic-web-app.yaml');
       fs.writeFileSync(specPath, BASIC_WEB_APP_YAML, 'utf8');
 
-      const result = runBin(['generate', '-f', specPath], tempDir);
+      // Baseline fixtures capture upstream output before WireMock injection existed
+      const result = runBin(['generate', '-f', specPath, '--no-wiremock'], tempDir);
 
       expect(result.code).toBe(0);
       expect(result.stdout).toContain('Generated docker-compose at:');
@@ -128,7 +129,8 @@ describe('xq-infra CLI', () => {
       }
       fs.writeFileSync(path.join(servicesDir, 'xq.config.yml'), GEN_DIR_CONFIG_YML, 'utf8');
 
-      const result = runBin(['generate', '-f', servicesDir], tempDir);
+      // Baseline fixtures capture upstream output before WireMock injection existed
+      const result = runBin(['generate', '-f', servicesDir, '--no-wiremock'], tempDir);
 
       expect(result.code).toBe(0);
 
@@ -196,7 +198,10 @@ describe('xq-infra CLI', () => {
       };
       fs.writeFileSync(overridesPath, JSON.stringify(overrides, null, 2), 'utf8');
 
-      const result = runBin(['generate', '-f', specPath, '--overrides', overridesPath], tempDir);
+      const result = runBin(
+        ['generate', '-f', specPath, '--overrides', overridesPath, '--no-wiremock'],
+        tempDir,
+      );
 
       expect(result.code).toBe(0);
       const compose = YAML.parse(

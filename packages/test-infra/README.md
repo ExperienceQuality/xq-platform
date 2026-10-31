@@ -41,10 +41,19 @@ in the current working directory from a spec file or a directory of
 ```bash
 pnpm exec xq-infra generate -f services.yaml
 pnpm exec xq-infra generate -f services.yaml --no-gateway
+pnpm exec xq-infra generate -f services.yaml --no-wiremock
 pnpm exec xq-infra generate -f services.yaml --keep-file
 pnpm exec xq-infra generate -f services.yaml --overrides overrides.json
 pnpm exec xq-infra generate -f services-dir/
 ```
+
+By default `generate` also injects an `xq-wiremock` service
+(`wiremock/wiremock:3.13.1`) bound to host port `18080` (or the next free port
+upward) and sets `WIREMOCK_BASE_URL=http://xq-wiremock:8080` on every user
+service that does not already define it. A `./wiremock` directory in the working
+directory, when present, is mounted at `/home/wiremock` for stub mappings. The
+injection is skipped entirely when the spec defines its own `wiremock` or
+`xq-wiremock` service, and can be disabled with `--no-wiremock`.
 
 `--overrides` takes a JSON file shaped like
 `{ "services": { "<name>": { <spec fields to override> } } }`, applied
