@@ -27,8 +27,19 @@ jobs:
       fail-fast: false
       matrix:
         node-version: ['24', '26']
+    uses: ExperienceQuality/.github/.github/workflows/node-test.yml@v1
+    with:
+      node-version: ${{ matrix.node-version }}
+      package-manager: pnpm
+
+  cucumber-report:
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['24']
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,14 +53,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run ci:build
-      - run: pnpm test
-      - name: Install Playwright Chromium
-        run: pnpm --filter @experiencequality/showcase-browser-e2e exec playwright install --with-deps chromium
-      - name: Run browser E2E tests
-        run: pnpm run test:e2e:browser
-      - name: Run Cucumber report verification
-        run: node scripts/verify-cucumber-report.mjs
+      - run: pnpm run ci:cucumber
       - name: Upload Cucumber report
         if: always()
         uses: actions/upload-artifact@v4

@@ -29,7 +29,7 @@
     "pack": "pnpm run verify:packages",
     "verify:structure": "node scripts/verify-structure.mjs",
     "verify:packages": "node scripts/verify-packages.mjs",
-    "ci:build": "pnpm run verify:structure && pnpm run verify:packages",
+    "ci:build": "pnpm run verify:structure && pnpm run verify:packages && node scripts/stage-ci-build-artifacts.mjs",
     "ci:cucumber": "pnpm run build && node scripts/verify-cucumber-report.mjs",
     "ci:test": "node scripts/ci-test.mjs",
     "ci:release": "node scripts/ci-test.mjs"
