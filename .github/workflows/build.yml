@@ -22,7 +22,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  packages:
+    uses: ExperienceQuality/.github/.github/workflows/node-build.yml@v1
+    with:
+      node-version: "24"
+      package-manager: pnpm
+
   build:
+    needs: packages
     strategy:
       fail-fast: false
       matrix:
