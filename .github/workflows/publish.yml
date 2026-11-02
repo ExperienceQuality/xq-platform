@@ -7,76 +7,27 @@ on:
       ref:
         required: true
         type: string
-      publish_plan_artifact_id:
-        required: true
-        type: string
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  pack:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
-    outputs:
-      pack-dir-artifact-id: ${{ steps.pack.outputs.pack-dir-artifact-id }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-          ref: ${{ inputs.ref }}
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 12.10.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run build
-      - name: Pack packages
-        id: pack
-        uses: changesets/action/pack@v2
-        with:
-          publish-plan-artifact-id: ${{ inputs.publish_plan_artifact_id }}
-
   publish:
-    needs: pack
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
-      packages: write
-    outputs:
-      published-packages: ${{ steps.publish.outputs.published-packages }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-          ref: ${{ inputs.ref }}
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 12.10.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          registry-url: 'https://npm.pkg.github.com'
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Publish packed packages
-        id: publish
-        uses: changesets/action/publish@v2
-        with:
-          pack-dir-artifact-id: ${{ needs.pack.outputs.pack-dir-artifact-id }}
-          create-github-releases: false
-          push-git-tags: false
-        env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
+    uses: ExperienceQuality/.github/.github/workflows/node-publish.yml@v1
+    with:
+      node-version: "24"
+      package-manager: pnpm
+      prepare: ci:build
+      ref: ${{ inputs.ref }}
+      package-directories: |
+        packages/rest-client
+        packages/db
+        packages/stub
+        packages/core
+        packages/test
+        packages/test-browser
+        packages/test-infra
 
   verify-published:
     needs: publish
@@ -96,8 +47,8 @@ jobs:
           version: 12.10.0
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          registry-url: 'https://npm.pkg.github.com'
+          node-version: "24"
+          registry-url: "https://npm.pkg.github.com"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Verify every expected package version
