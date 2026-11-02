@@ -227,7 +227,7 @@ Owner: GitHub Actions Specialist
 
 Files:
 
-- `.github/workflows/deploy.yml`
+- `.github/workflows/release.yml`
 - `.github/workflows/build.yml`
 - `.github/workflows/test.yml`
 
@@ -246,7 +246,7 @@ Owner: GitHub Actions Specialist
 Files:
 
 - `scripts/verify-release-version.mjs`
-- `.github/workflows/deploy.yml`
+- `.github/workflows/release.yml`
 
 Work:
 

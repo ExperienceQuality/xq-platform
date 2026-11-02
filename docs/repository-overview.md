@@ -37,34 +37,38 @@ The root and apps are private. pnpm discovers `packages/*` and `apps/*`; root Ty
 - Packed-consumer checks install archives into temporary consumers to detect problems hidden by workspace links.
 - `apps/backend-e2e`, `apps/browser-e2e`, and `apps/infra-e2e` are private consumer examples and E2E verification projects, not shipping applications.
 
-Current CI has separate Build and Test workflows on PRs and main, using Node 24 and 26. The Test workflow runs packed-consumer checks, package tests, browser E2E, and Cucumber report verification. The additional release gate runs backend Docker E2E and repeats some checks; the release gate also runs the real-Docker infra E2E command.
+Pull-request CI uses separate Build and Test workflows (hub `@v2`). Push to `main` runs Release: hub build and test, a per-package publish matrix (hub skips versions already in the registry), and a Cucumber report artifact for Pages. Hub `ci:test` covers packed-consumer checks, package tests, browser E2E, backend Docker E2E, real-Docker infra E2E, and Cucumber verification.
 
 ## Current distribution flows
 
 | Output               | Destination              | Trigger                                                                   |
 | -------------------- | ------------------------ | ------------------------------------------------------------------------- |
-| Seven Node packages  | GitHub Packages          | `main` push selects version/publish mode, or manual dispatch by exact SHA |
-| Cucumber HTML report | GitHub Pages             | Successful main Test run or manual report selection                       |
+| Seven Node packages  | GitHub Packages          | Manual version-bump PR; merge to `main` publishes unpublished versions    |
+| Cucumber HTML report | GitHub Pages             | Successful main Release run or manual report selection                    |
 | Agent skills         | GitHub skills publishing | Changes under `.agents/skills/` on main or manual dispatch                |
 
-The Node release routes an exact commit through Changesets mode selection, Build, Test, release validation, package packing/publication, registry reconciliation, and platform tag/GitHub Release creation. A source version, git tag, registry version, and GitHub Release are distinct states; one does not prove the others succeeded.
+The Node release path is: bump all seven package versions in a PR, merge to
+`main`, then Release runs build, test, per-package hub publish (skip if already
+published), and registry verification. No new git tags and no new GitHub
+Releases. Frozen `CHANGELOG.md` files stay as history.
 
 The architecture contract is [architecture/github-packages-release-spec.md](architecture/github-packages-release-spec.md); the operating policy is [release-policy.md](release-policy.md). Reports and agent skills remain separate from Node package releases.
 
 ## Node release target
 
 ```text
-Feature PR with changeset
-  -> merge to main
-  -> Changesets creates or updates a release PR
-  -> maintainer reviews aligned versions and changelogs
-  -> merge release PR authorizes publication
-  -> validate the exact release commit
-  -> build and publish packages to GitHub Packages
-  -> verify every expected package/version
-  -> finalize tags and GitHub release records
+Feature PR (no version change)
+  -> merge to main (Release skips already-published versions)
+Bump PR sets the same version on all seven packages
+  -> verify:versions passes on the PR
+  -> merge bump PR to main
+  -> Release build + test
+  -> matrix publish via hub node-publish@v2
 ```
 
-Changesets owns version preparation and changelogs. One workflow owns Node publication; manual tags do not initiate publication. All seven packages remain in one fixed-version group initially. A registry failure must not be silently treated as an unpublished version. Partial releases are recoverable only against the same immutable source commit; published versions and existing tags are never overwritten.
+Maintainers own version preparation. One Release workflow owns Node
+publication. All seven packages remain in one fixed-version group. A registry
+failure must not be silently treated as an unpublished version. Recovery is
+**Re-run failed jobs**; published versions are never overwritten.
 
-The package layout and APIs stay unchanged. The migration reduces overlapping release responsibilities rather than reorganizing package code. See the [implementation plan](../tasks/release-refactor/plan.md) and [task checklist](../tasks/release-refactor/todo.md).
+The package layout and APIs stay unchanged. See the [implementation plan](../tasks/release-refactor/plan.md) and [task checklist](../tasks/release-refactor/todo.md).

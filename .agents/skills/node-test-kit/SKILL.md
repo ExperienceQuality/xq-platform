@@ -168,7 +168,7 @@ npm test                 # unit and integration suites
 npm run check            # structure, build, and workspace checks
 npm run ci:cucumber      # Cucumber smoke run and HTML report verification
 npm run verify:packages  # packed-package fresh-consumer verification
-npm run ci:release       # full release gate, including Docker Compose E2E
+npm run ci:test          # full CI test gate, including Docker Compose E2E
 ```
 
 The Cucumber report defaults to the consumer-relative `artifacts/index.html`. A blank or missing `reportPath` uses that fallback. A custom path must remain relative to the consumer workspace; absolute paths and `..` traversal are invalid. CI packages this report as an artifact and GitHub Pages publishes the latest successful `main` report.

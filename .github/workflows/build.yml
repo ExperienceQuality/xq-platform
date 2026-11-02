@@ -2,58 +2,18 @@
 name: Build
 
 on:
-  workflow_call:
-    inputs:
-      ref:
-        required: false
-        type: string
-        default: main
   pull_request:
     branches: [main]
-  push:
-    branches: [main]
-  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: build-${{ github.workflow }}-${{ github.ref }}
+  group: build-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  packages:
-    uses: ExperienceQuality/.github/.github/workflows/node-build.yml@v1
-    with:
-      node-version: '24'
-      package-manager: pnpm
-
   build:
-    needs: packages
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: ['24', '26']
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-          ref: ${{ inputs.ref || github.ref }}
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 12.10.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Verify changeset for package changes
-        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')
-        run: pnpm exec changeset status --since origin/${{ github.base_ref }}
-      - run: pnpm run lint
-      - run: pnpm run format:check
-      - run: pnpm run check
-      - run: pnpm run test:release
+    uses: ExperienceQuality/.github/.github/workflows/node-build.yml@v2
+    with:
+      package-manager: pnpm

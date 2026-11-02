@@ -35,17 +35,14 @@ The internal release packages are:
 - `@experiencequality/test-infra`
 
 The root workspace and `apps/` remain private. The seven publishable packages
-stay in one fixed `MAJOR.MINOR.PATCH` group, with exact internal dependencies
-aligned automatically by Changesets. Packages are published to the company
-GitHub Packages npm registry, not the public npm registry. Contributors record
-consumer-facing release intent with `pnpm changeset`; package source, tests,
-configs, and manifest changes require a changeset in pull requests unless they
-are documentation-only or the generated release branch. Maintainers can inspect
-pending releases with `pnpm run changeset:status`. Merging a generated Version
-Packages PR authorizes the release workflow to validate and publish the exact
-merge commit. The package contract requires Node.js 24 or newer, Vitest 4 or
-newer, and `@cucumber/cucumber` 13.2.x when the optional Cucumber integration
-is used.
+stay in one fixed `MAJOR.MINOR.PATCH` group. Maintainers bump all seven
+versions in one PR (`pnpm -r --filter "./packages/*" exec npm pkg set
+version=X.Y.Z`); `pnpm run verify:versions` fails on misalignment. Merging the
+bump PR to `main` publishes each package whose version is not yet in GitHub
+Packages via hub `node-publish@v2` (`pnpm publish`). Packages go to the company
+GitHub Packages npm registry, not the public npm registry. The package contract
+requires Node.js 24 or newer, Vitest 4 or newer, and `@cucumber/cucumber`
+13.2.x when the optional Cucumber integration is used.
 
 `@experiencequality/test-infra` is a TypeScript source package compiled to ESM
 in `dist/` and built through the root project reference; it ships a compiled
@@ -74,14 +71,12 @@ This guarantee applies at the helper boundary only; a hand-written
 `cucumber-js` configuration or direct CLI formatter selection is outside the
 platform's enforcement boundary.
 
-The Test workflow runs on Node.js 24 and 26 and uploads the Node 24
+The Release workflow (push to `main`) uploads the Node 24
 `artifacts/index.html` report as the `cucumber-report-node-24` artifact with
-`if: always()` and seven-day retention. Node 26 provides compatibility
-coverage; Node 24 is the canonical report selected by Pages. A failed run
-remains diagnosable through its downloadable artifact. The GitHub Pages
-workflow is main-only: it publishes the latest successful Test report from
-`main` as the site-root `index.html`. Failed, pull-request, and release-tag
-runs do not replace the last successful Pages deployment.
+seven-day retention. Pull-request Build and Test use hub `@v2` on Node 24
+only. The GitHub Pages workflow is main-only: it publishes the latest
+successful Release report from `main` as the site-root `index.html`. Failed
+and pull-request runs do not replace the last successful Pages deployment.
 
 ### GitHub Pages setup
 
@@ -95,11 +90,10 @@ deployment job. If this setting is missing, `actions/deploy-pages` fails with a
 
 ### Idempotent package publication and recovery
 
-The release workflow verifies that all seven package manifests and internal
-dependency ranges remain aligned before publication. Changesets publishes the
-missing planned packages; the release succeeds only after every expected
-package/version is confirmed in GitHub Packages and the single platform
-tag/GitHub Release exists. Partial package publication can be resumed from the
-same immutable `release_sha`; release-record failures use the manual
-`finalize_only` path. Authentication, permission, network, or malformed
-registry responses fail closed and are never treated as missing packages.
+The bump PR's `verify:versions` check keeps all seven package manifests and
+internal dependency ranges aligned. On merge, Release publishes each package
+whose version is missing from GitHub Packages and skips the rest. Recovery is
+GitHub **Re-run failed jobs**; already-published packages skip themselves.
+Authentication, permission, network, or malformed registry responses fail
+closed and are never treated as missing packages. No new platform tags or
+GitHub Releases are created.
