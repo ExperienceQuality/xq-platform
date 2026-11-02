@@ -15,7 +15,6 @@ jobs:
     uses: ExperienceQuality/.github/.github/workflows/node-build.yml@b9be0afb152f57b08b99c7cb05dc441bbc1565be
     with:
       package-manager: yarn
-    continue-on-error: false
 
   publish-skip-core:
     uses: ExperienceQuality/.github/.github/workflows/node-publish.yml@b9be0afb152f57b08b99c7cb05dc441bbc1565be
