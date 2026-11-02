@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   packages:
-    uses: ExperienceQuality/.github/.github/workflows/node-build.yml@v1
+    uses: ExperienceQuality/.github/.github/workflows/node-build.yml@b9be0afb152f57b08b99c7cb05dc441bbc1565be
     with:
       node-version: '24'
       package-manager: pnpm

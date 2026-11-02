@@ -1,0 +1,36 @@
+# Throwaway pilot for ExperienceQuality/.github hub v2 candidate. Do not merge.
+name: Hub v2 pilot
+
+on:
+  push:
+    branches: [pilot/hub-v2-candidate-b9be0af]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  yarn-must-fail:
+    uses: ExperienceQuality/.github/.github/workflows/node-build.yml@b9be0afb152f57b08b99c7cb05dc441bbc1565be
+    with:
+      package-manager: yarn
+    continue-on-error: false
+
+  publish-skip-core:
+    uses: ExperienceQuality/.github/.github/workflows/node-publish.yml@b9be0afb152f57b08b99c7cb05dc441bbc1565be
+    permissions:
+      contents: read
+      packages: write
+    with:
+      package-manager: pnpm
+      working-directory: packages/core
+
+  publish-skip-private:
+    uses: ExperienceQuality/.github/.github/workflows/node-publish.yml@b9be0afb152f57b08b99c7cb05dc441bbc1565be
+    permissions:
+      contents: read
+      packages: write
+    with:
+      package-manager: pnpm
+      working-directory: apps/backend-e2e

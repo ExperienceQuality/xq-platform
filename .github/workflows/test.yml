@@ -27,7 +27,7 @@ jobs:
       fail-fast: false
       matrix:
         node-version: ['24', '26']
-    uses: ExperienceQuality/.github/.github/workflows/node-test.yml@v1
+    uses: ExperienceQuality/.github/.github/workflows/node-test.yml@b9be0afb152f57b08b99c7cb05dc441bbc1565be
     with:
       node-version: ${{ matrix.node-version }}
       package-manager: pnpm
