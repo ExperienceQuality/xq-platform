@@ -14,5 +14,4 @@ test-results/
 .DS_Store
 .idea/
 tasks/
-.devin/
-.squad/
+.squad/worktrees/
