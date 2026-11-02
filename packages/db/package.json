@@ -18,6 +18,7 @@
   },
   "scripts": {
     "build": "tsc -b",
+    "ci:publish": "pnpm run build && pnpm publish --no-git-checks",
     "check": "tsc -p tsconfig.test.json --noEmit",
     "test": "pnpm --dir ../.. exec vitest run --config vitest.config.ts packages/db/test"
   },

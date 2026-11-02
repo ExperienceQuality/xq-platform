@@ -52,6 +52,7 @@
   },
   "scripts": {
     "build": "tsc -b",
+    "ci:publish": "pnpm run build && pnpm publish --no-git-checks",
     "check": "tsc -p tsconfig.test.json --noEmit",
     "test": "vitest run",
     "test:postgres": "vitest run --config vitest.database.config.ts"

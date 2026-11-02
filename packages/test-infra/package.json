@@ -15,6 +15,7 @@
   },
   "scripts": {
     "build": "tsc -b",
+    "ci:publish": "pnpm run build && pnpm publish --no-git-checks",
     "check": "tsc -p tsconfig.test.json --noEmit",
     "test": "vitest run --config vitest.config.ts"
   },

@@ -2,63 +2,18 @@
 name: Test
 
 on:
-  workflow_call:
-    inputs:
-      ref:
-        required: false
-        type: string
-        default: main
   pull_request:
     branches: [main]
-  push:
-    branches: [main]
-  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: test-${{ github.workflow }}-${{ github.ref }}
+  group: test-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   test:
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: ['24', '26']
-    uses: ExperienceQuality/.github/.github/workflows/node-test.yml@v1
+    uses: ExperienceQuality/.github/.github/workflows/node-test.yml@v2
     with:
-      node-version: ${{ matrix.node-version }}
       package-manager: pnpm
-
-  cucumber-report:
-    needs: test
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: ['24']
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-          ref: ${{ inputs.ref || github.ref }}
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 12.10.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run ci:cucumber
-      - name: Upload Cucumber report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cucumber-report-node-${{ matrix.node-version }}
-          path: artifacts/index.html
-          if-no-files-found: error
-          retention-days: 7
