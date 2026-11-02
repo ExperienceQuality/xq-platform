@@ -158,7 +158,6 @@ jobs:
     uses: ./.github/workflows/publish.yml
     with:
       ref: ${{ needs.select-mode.outputs.ref }}
-      publish_plan_artifact_id: ${{ needs.select-mode.outputs.publish-plan-artifact-id }}
     permissions:
       contents: write
       packages: write
