@@ -1,6 +1,6 @@
 {
-  "version": "2.0.0",
-  "release_tag": "v2.0.0",
+  "version": "2.1.0",
+  "release_tag": "v2.1.0",
   "config_schema_version": "1.0.0",
   "memory_schema_version": "1.0.0",
   "installed_at": "2026-11-01T11:42:46.863Z",
@@ -20,7 +20,7 @@
     ".cursor/skills/squad-delivery/SKILL.md": "c95810531fb2d2b2fdf5781ca7b796c8d59942ffaad9fe2f92e911116c566a46",
     ".cursor/skills/train-me/SKILL.md": "6dcbb1dc94eb8b0f97a853d258aaf468c6cfa2bb2f9e87bd077541f92893301b",
     ".squad/MEMORY.md": "b3d949e414ec6244496f2a9ffd7ac9c3c7c97e917bf5b8787d8b54dedd2c264b",
-    ".squad/README.md": "de50a2cbce24c83d3fc7266ad4ef1afe71243cc418e608bfcac4173bcf422bb5",
+    ".squad/README.md": "cdd06255d1d7e63cd865509180ab93f61de3e27b7861d596947cb229e697401e",
     ".squad/agents/analyst.md": "cb00a094b1196f1a67d2390367c99d6db86769c5b1442798a3a516dad0e5df4a",
     ".squad/agents/implementer.md": "cb15f63350284a1299a29be0c753389a15fe9cc61a8a930927dc0030db4f7850",
     ".squad/agents/lead.md": "4caa8992d2d534e03c78a19e1d97c08bb1103a2c7231a195491d99387364380f",
@@ -42,13 +42,14 @@
     ".squad/scripts/merge-cursor-hooks.mjs": "af255884e0bf2fd91ac378c9923e9de0f3c5230b33aa322f0cf591ca4b505c5f",
     ".squad/scripts/upgrade-managed.mjs": "e9854b836b5aa03f9e50af76cbb841738a21b7e0793611ff7239157add7d382f",
     ".squad/scripts/write-install-state.mjs": "3463070e072ede14285f804c5536a0401114dd04c7ff39535f9b953f0d4fe319",
-    ".squad/squad.json": "a6bb607f15e76db10e7137ed84198dd259e598164398e396079b92b54b1a630c",
+    ".squad/squad.json": "4f29b59e5f674442e2025b9b29f200b889265dd12d0c57405e3990c9ddf38f70",
     ".squad/workflows/concurrent-delivery.md": "9b76d8669db87896921d8df1c6f1d69e66fc290b57a51536c3c9c495a20e855e",
     ".squad/workflows/delivery.md": "6d8ff1f36a23fa2603a384ce0d3d03c16d8dd5fa0551c6fd538d57909a200949",
     ".squad/workflows/memory-maintenance.md": "f33f8c7ea04c2e6bd18572c1ed86684dff67709694ef98407f7f06a288b9bad5",
     ".squad/workflows/parallel-execution.md": "ea3783b9c3b15a5baef136df2f8c38175e2d60e2d5f9261e39ee247d20f376d6",
-    "AGENTS.md": "e6af2be33b0272b061540bba8bf17de2386c41d6dd5897bad8703332ee0137a6",
-    ".squad/retired.json": "32463858c27546f0d4952ab6aad72c30c68bd3bc8d9d795465c38dfadd82fcbf"
+    "AGENTS.md": "e0b840e02ac61365126f248c4280edbf5cbd8434ddcc43de94023ec1f20013d4",
+    ".squad/retired.json": "32463858c27546f0d4952ab6aad72c30c68bd3bc8d9d795465c38dfadd82fcbf",
+    ".cursor/skills/caveman/SKILL.md": "19494c813385db9269a1a08d0f9e163d29fe7a7fe552054be889472758e644fa"
   },
   "ownership": {
     "upstream_managed": [
@@ -79,5 +80,5 @@
     ]
   },
   "retired_files": {},
-  "updated_at": "2026-11-02T13:30:05.175Z"
+  "updated_at": "2026-11-21T11:47:53.976Z"
 }
