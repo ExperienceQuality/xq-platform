@@ -38,6 +38,7 @@ jobs:
             test,
             test-browser,
             test-infra,
+            mcp-server,
           ]
     uses: ExperienceQuality/.github/.github/workflows/node-publish.yml@v2
     permissions:

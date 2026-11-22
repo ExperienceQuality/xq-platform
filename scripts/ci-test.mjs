@@ -12,6 +12,7 @@ if (process.argv.length !== 2) {
 run('pnpm', ['run', 'check']);
 run('pnpm', ['run', 'test:release']);
 run('pnpm', ['test']);
+run('pnpm', ['run', 'test:e2e:mcp']);
 run('pnpm', ['run', 'ci:cucumber']);
 
 let validationError;

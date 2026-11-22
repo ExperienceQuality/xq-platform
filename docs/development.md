@@ -10,8 +10,9 @@ pnpm test
 pnpm run build
 ```
 
-The workspace layout is enforced by `scripts/verify-structure.mjs`. Package
-archives are built and tested in a fresh temporary consumer by
+The workspace layout is enforced by `scripts/verify-structure.mjs`. To add a new
+publishable package, follow [onboarding-new-package.md](onboarding-new-package.md).
+Package archives are built and tested in a fresh temporary consumer by
 `scripts/verify-packages.mjs`:
 
 ```bash
@@ -33,9 +34,10 @@ The internal release packages are:
 - `@experiencequality/test`
 - `@experiencequality/test-browser`
 - `@experiencequality/test-infra`
+- `@experiencequality/mcp-server`
 
-The root workspace and `apps/` remain private. The seven publishable packages
-stay in one fixed `MAJOR.MINOR.PATCH` group. Maintainers bump all seven
+The root workspace and `apps/` remain private. The eight publishable packages
+stay in one fixed `MAJOR.MINOR.PATCH` group. Maintainers bump all eight
 versions in one PR (`pnpm -r --filter "./packages/*" exec npm pkg set
 version=X.Y.Z`); `pnpm run verify:versions` fails on misalignment. Merging the
 bump PR to `main` publishes each package whose version is not yet in GitHub
@@ -90,7 +92,7 @@ deployment job. If this setting is missing, `actions/deploy-pages` fails with a
 
 ### Idempotent package publication and recovery
 
-The bump PR's `verify:versions` check keeps all seven package manifests and
+The bump PR's `verify:versions` check keeps all eight package manifests and
 internal dependency ranges aligned. On merge, Release publishes each package
 whose version is missing from GitHub Packages and skips the rest. Recovery is
 GitHub **Re-run failed jobs**; already-published packages skip themselves.

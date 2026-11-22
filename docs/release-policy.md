@@ -8,9 +8,9 @@ rather than inferring them from workflow names or successful jobs.
 
 `main` is the source of truth for published package versions. Version bumps are
 manual: a maintainer opens a PR that sets the same `MAJOR.MINOR.PATCH` on all
-seven publishable packages (for example with
+eight publishable packages (for example with
 `pnpm -r --filter "./packages/*" exec npm pkg set version=X.Y.Z`). Root
-`ci:build` fails the PR when the seven versions or their internal dependencies
+`ci:build` fails the PR when the eight versions or their internal dependencies
 are misaligned (`pnpm run verify:versions`).
 
 Merging that PR to `main` triggers the Release workflow. Each package is
@@ -37,8 +37,9 @@ The approved publishable set is maintained in
 5. `@experiencequality/test`
 6. `@experiencequality/test-browser`
 7. `@experiencequality/test-infra`
+8. `@experiencequality/mcp-server`
 
-All seven versions must remain the same `MAJOR.MINOR.PATCH` value. Their
+All eight versions must remain the same `MAJOR.MINOR.PATCH` value. Their
 `publishConfig` points to `https://npm.pkg.github.com`, and publication uses
 the repository-provided GitHub token with `packages: write`. Each package's
 `ci:publish` script runs `pnpm run build && pnpm publish --no-git-checks`. The
@@ -52,10 +53,10 @@ instructions in `docs/consumer-guide.md`.
 A normal release follows this path:
 
 1. A feature PR lands on `main` without changing package versions (no publish).
-2. A maintainer opens a bump PR that sets the same version on all seven
+2. A maintainer opens a bump PR that sets the same version on all eight
    packages and confirms `verify:versions` passes.
 3. Merging the bump PR to `main` runs Release: build, test, then a matrix of
-   seven hub `node-publish` jobs.
+   eight hub `node-publish` jobs.
 4. Already-published versions skip; new versions publish once.
 5. `cucumber-report` uploads the Pages artifact; the Pages workflow deploys it.
 
@@ -90,11 +91,11 @@ or `/docs` source should be selected.
 
 ## Runtime support
 
-All seven packages require Node.js 24 or newer. Vitest 4 or newer applies to
+All eight packages require Node.js 24 or newer. Vitest 4 or newer applies to
 the `test` Vitest adapter; `test-browser` requires its Playwright peer
-(`@playwright/test >=1.64 <2`). The compiled `test-infra` CLI has no
-TypeScript or Vitest runtime requirement. The optional Cucumber peer range is
-`>=13.2.1 <14`.
+(`@playwright/test >=1.64 <2`). The compiled `test-infra` and `mcp-server`
+CLIs have no TypeScript or Vitest runtime requirement. The optional Cucumber
+peer range is `>=13.2.1 <14`.
 
 ## Open ownership and legal decisions
 

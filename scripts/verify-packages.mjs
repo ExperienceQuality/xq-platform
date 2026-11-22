@@ -254,10 +254,11 @@ Then('response JSON at {string} contains:', async function (this: ResponseWorld,
   // When each public package root is imported,
   // Then package resolution must work without workspace links.
   for (const packageName of packageNames) {
-    // The CLI-only infra package has no root module export; resolve its manifest instead.
+    // CLI-only packages have no root module export; resolve their manifest instead.
     const specifier =
-      packageName === '@experiencequality/test-infra'
-        ? '@experiencequality/test-infra/package.json'
+      packageName === '@experiencequality/test-infra' ||
+      packageName === '@experiencequality/mcp-server'
+        ? `${packageName}/package.json`
         : packageName;
     run(
       process.execPath,

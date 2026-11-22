@@ -8,8 +8,8 @@ import { publishablePackageNames, publishablePackages } from './publishable-pack
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
-test('publishable inventory lists seven packages with matching directories', () => {
-  assert.equal(publishablePackages.length, 7);
+test('publishable inventory lists eight packages with matching directories', () => {
+  assert.equal(publishablePackages.length, 8);
   assert.deepEqual(
     publishablePackageNames,
     publishablePackages.map((name) => `@experiencequality/${name}`),
