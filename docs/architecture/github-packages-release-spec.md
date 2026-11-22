@@ -24,7 +24,7 @@ The repository is the source of truth, GitHub Packages is the distribution mecha
 | Registry                      | `https://npm.pkg.github.com`                           |
 | Package scope                 | `@experiencequality/*`                                 |
 | Registry visibility           | Private/restricted                                     |
-| Versioning                    | Lockstep SemVer; manual bump of all seven packages     |
+| Versioning                    | Lockstep SemVer; manual bump of all eight packages     |
 | Release approval              | Merge of the version-bump PR to `main`                 |
 | Publication                   | `release.yml` matrix of hub `node-publish@v2`          |
 | Release identity              | Registry versions only; no new tags or GitHub Releases |
@@ -38,7 +38,8 @@ xq-platform/
 ├── apps/
 │   ├── backend-e2e/
 │   ├── browser-e2e/
-│   └── infra-e2e/
+│   ├── infra-e2e/
+│   └── mcp-server-e2e/
 ├── packages/
 │   ├── rest-client/
 │   ├── db/
@@ -46,7 +47,8 @@ xq-platform/
 │   ├── core/
 │   ├── test/
 │   ├── test-browser/
-│   └── test-infra/
+│   ├── test-infra/
+│   └── mcp-server/
 ├── scripts/
 ├── .github/workflows/
 ├── docs/
@@ -58,7 +60,7 @@ xq-platform/
 
 | Directory            | Responsibility                                                     |
 | -------------------- | ------------------------------------------------------------------ |
-| `packages/`          | Exactly the seven approved publishable product packages            |
+| `packages/`          | Exactly the eight approved publishable product packages            |
 | `apps/`              | Private showcase and E2E consumers; never published                |
 | `scripts/`           | Structure, archive, registry, and version-alignment checks         |
 | `.github/workflows/` | PR Build/Test and main Release automation                          |
@@ -77,12 +79,13 @@ All publishable packages use the organization scope and lowercase kebab-case:
 5. `@experiencequality/test`
 6. `@experiencequality/test-browser`
 7. `@experiencequality/test-infra`
+8. `@experiencequality/mcp-server`
 
-`xq-infra` is the executable provided by `test-infra`, not an eighth package. The canonical inventory lives in `scripts/publishable-packages.mjs`; adding a publishable package requires updating that inventory, the Release publish matrix, the package-boundary map, and the repository documentation.
+`xq-infra` and `xq-mcp` are executables provided by `test-infra` and `mcp-server`, not additional packages. The canonical inventory lives in `scripts/publishable-packages.mjs`; adding a publishable package requires updating that inventory, the Release publish matrix, the package-boundary map, and the repository documentation (see [onboarding-new-package.md](../onboarding-new-package.md)).
 
 ## 5. Lockstep versioning
 
-All seven packages share one exact `MAJOR.MINOR.PATCH` value. Maintainers bump versions in a PR:
+All eight packages share one exact `MAJOR.MINOR.PATCH` value. Maintainers bump versions in a PR:
 
 ```sh
 pnpm -r --filter "./packages/*" exec npm pkg set version=X.Y.Z
@@ -107,7 +110,7 @@ Every publishable package must have:
 - Internal dependencies expressed as `workspace:*` in source manifests.
 - A `repository.url` pointing to `ExperienceQuality/xq-platform` and a `repository.directory` matching its package path.
 
-Packed artifacts must contain ordinary aligned dependency versions and no unresolved `workspace:` references. `test-infra` intentionally ships only the compiled `xq-infra` CLI; it does not expose a public module entrypoint.
+Packed artifacts must contain ordinary aligned dependency versions and no unresolved `workspace:` references. `test-infra` and `mcp-server` intentionally ship only compiled CLIs (`xq-infra`, `xq-mcp`); they do not expose a public module entrypoint.
 
 ## 7. Authentication
 
@@ -129,7 +132,7 @@ Feature PR (no version bump)
   -> Build/Test on the PR (hub @v2, Node 24)
   -> merge to main
   -> Release runs; publish jobs skip already-published versions
-Bump PR sets the same version on all seven packages
+Bump PR sets the same version on all eight packages
   -> Build/Test + verify:versions
   -> merge bump PR to main
   -> Release build + test
@@ -154,7 +157,8 @@ Consumers install explicit platform versions and keep all `@experiencequality/*`
   "dependencies": {
     "@experiencequality/test": "1.0.6",
     "@experiencequality/test-browser": "1.0.6",
-    "@experiencequality/test-infra": "1.0.6"
+    "@experiencequality/test-infra": "1.0.6",
+    "@experiencequality/mcp-server": "1.0.6"
   }
 }
 ```

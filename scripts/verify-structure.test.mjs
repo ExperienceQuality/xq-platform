@@ -12,10 +12,12 @@ test('discovers the approved libraries and applications through pnpm', () => {
   assert.deepEqual(workspaces.map(({ name }) => name).sort(), [
     '@experiencequality/core',
     '@experiencequality/db',
+    '@experiencequality/mcp-server',
     '@experiencequality/rest-client',
     '@experiencequality/showcase-backend-e2e',
     '@experiencequality/showcase-browser-e2e',
     '@experiencequality/showcase-infra-e2e',
+    '@experiencequality/showcase-mcp-server-e2e',
     '@experiencequality/stub',
     '@experiencequality/test',
     '@experiencequality/test-browser',
@@ -44,6 +46,7 @@ const FIXTURE_LIBRARIES = [
   'test',
   'test-browser',
   'test-infra',
+  'mcp-server',
 ];
 const FIXTURE_INTERNAL_DEPENDENCIES = {
   core: ['@experiencequality/rest-client', '@experiencequality/stub'],
@@ -145,6 +148,15 @@ function createLibraryManifest(name) {
       test: 'vitest run --config vitest.config.ts',
     };
   }
+  if (name === 'mcp-server') {
+    delete manifest.exports;
+    manifest.bin = { 'xq-mcp': './dist/bin/xq-mcp.js' };
+    manifest.scripts = {
+      build: 'tsc -b',
+      check: 'tsc -p tsconfig.test.json --noEmit',
+      test: 'vitest run --config vitest.config.ts',
+    };
+  }
   return manifest;
 }
 
@@ -155,7 +167,7 @@ function createFixtureRoot() {
     name: 'fixture-root',
     private: true,
     scripts: {
-      test: 'pnpm --filter @experiencequality/rest-client --filter @experiencequality/test-infra --workspace-concurrency=1 run test',
+      test: 'pnpm --filter @experiencequality/rest-client --filter @experiencequality/test-infra --filter @experiencequality/mcp-server --workspace-concurrency=1 run test',
     },
   });
   writeJson(join(fixtureRoot, 'tsconfig.json'), {
@@ -172,6 +184,12 @@ function createFixtureRoot() {
   mkdirSync(join(fixtureRoot, 'packages/test-infra/src/bin'), { recursive: true });
   writeFileSync(
     join(fixtureRoot, 'packages/test-infra/src/bin/xq-infra.ts'),
+    '#!/usr/bin/env node\n',
+    'utf8',
+  );
+  mkdirSync(join(fixtureRoot, 'packages/mcp-server/src/bin'), { recursive: true });
+  writeFileSync(
+    join(fixtureRoot, 'packages/mcp-server/src/bin/xq-mcp.ts'),
     '#!/usr/bin/env node\n',
     'utf8',
   );
@@ -205,23 +223,23 @@ function verifyFixture(fixtureRoot, workspaces = fixtureWorkspaces(fixtureRoot))
   return () => verifyStructure({ workspaceRoot: fixtureRoot, workspaces });
 }
 
-test('accepts a valid seven-package fixture root', (t) => {
+test('accepts a valid eight-package fixture root', (t) => {
   const fixtureRoot = createFixtureRoot();
   t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
 
   assert.doesNotThrow(verifyFixture(fixtureRoot));
 });
 
-test('rejects a fixture missing the seventh workspace', (t) => {
+test('rejects a fixture missing the eighth workspace', (t) => {
   const fixtureRoot = createFixtureRoot();
   t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
 
   assert.throws(
     verifyFixture(
       fixtureRoot,
-      fixtureWorkspaces(fixtureRoot, { omitNames: ['@experiencequality/test-infra'] }),
+      fixtureWorkspaces(fixtureRoot, { omitNames: ['@experiencequality/mcp-server'] }),
     ),
-    /exactly 7 public libraries/,
+    /exactly 8 public libraries/,
   );
 });
 
@@ -344,10 +362,110 @@ test('rejects a root test script missing the test-infra selector', (t) => {
 
   mutateJson(join(fixtureRoot, 'package.json'), (manifest) => {
     manifest.scripts.test =
-      'pnpm --filter @experiencequality/rest-client --workspace-concurrency=1 run test';
+      'pnpm --filter @experiencequality/rest-client --filter @experiencequality/mcp-server --workspace-concurrency=1 run test';
   });
 
   assert.throws(verifyFixture(fixtureRoot), /must include @experiencequality\/test-infra/);
+});
+
+test('rejects a mcp-server manifest publishing to the wrong registry', (t) => {
+  const fixtureRoot = createFixtureRoot();
+  t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
+
+  mutateJson(join(fixtureRoot, 'packages/mcp-server/package.json'), (manifest) => {
+    manifest.publishConfig.registry = 'https://registry.npmjs.org';
+  });
+
+  assert.throws(verifyFixture(fixtureRoot), /must publish to the company npm registry/);
+});
+
+test('rejects mcp-server depending on another internal package', (t) => {
+  const fixtureRoot = createFixtureRoot();
+  t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
+
+  mutateJson(join(fixtureRoot, 'packages/mcp-server/package.json'), (manifest) => {
+    manifest.dependencies = { '@experiencequality/test': 'workspace:*' };
+  });
+
+  assert.throws(verifyFixture(fixtureRoot), /unexpected internal dependency boundary/);
+});
+
+test('rejects an existing package depending on mcp-server', (t) => {
+  const fixtureRoot = createFixtureRoot();
+  t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
+
+  mutateJson(join(fixtureRoot, 'packages/rest-client/package.json'), (manifest) => {
+    manifest.dependencies = { '@experiencequality/mcp-server': 'workspace:*' };
+  });
+
+  assert.throws(verifyFixture(fixtureRoot), /unexpected internal dependency boundary/);
+});
+
+test('rejects a mcp-server manifest with the wrong module type', (t) => {
+  const fixtureRoot = createFixtureRoot();
+  t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
+
+  mutateJson(join(fixtureRoot, 'packages/mcp-server/package.json'), (manifest) => {
+    manifest.type = 'commonjs';
+  });
+
+  assert.throws(verifyFixture(fixtureRoot), /must be an ES module package/);
+});
+
+test('rejects a mcp-server manifest with the wrong bin mapping', (t) => {
+  const fixtureRoot = createFixtureRoot();
+  t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
+
+  mutateJson(join(fixtureRoot, 'packages/mcp-server/package.json'), (manifest) => {
+    manifest.bin = { 'xq-mcp': './dist/cli/index.js' };
+  });
+
+  assert.throws(verifyFixture(fixtureRoot), /must map xq-mcp/);
+});
+
+test('rejects a mcp-server manifest with the wrong build script', (t) => {
+  const fixtureRoot = createFixtureRoot();
+  t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
+
+  mutateJson(join(fixtureRoot, 'packages/mcp-server/package.json'), (manifest) => {
+    manifest.scripts.build = 'tsc -p tsconfig.json';
+  });
+
+  assert.throws(verifyFixture(fixtureRoot), /must build with tsc -b/);
+});
+
+test('rejects a root tsconfig missing the mcp-server reference', (t) => {
+  const fixtureRoot = createFixtureRoot();
+  t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
+
+  mutateJson(join(fixtureRoot, 'tsconfig.json'), (tsconfig) => {
+    tsconfig.references = tsconfig.references.filter(
+      (reference) => reference.path !== './packages/mcp-server',
+    );
+  });
+
+  assert.throws(verifyFixture(fixtureRoot), /must reference packages\/mcp-server/);
+});
+
+test('rejects a mcp-server package missing its bin source', (t) => {
+  const fixtureRoot = createFixtureRoot();
+  t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
+
+  rmSync(join(fixtureRoot, 'packages/mcp-server/src/bin/xq-mcp.ts'));
+
+  assert.throws(verifyFixture(fixtureRoot), /must own src\/bin\/xq-mcp\.ts/);
+});
+
+test('rejects a root test script missing the mcp-server selector', (t) => {
+  const fixtureRoot = createFixtureRoot();
+  t.after(() => rmSync(fixtureRoot, { recursive: true, force: true }));
+
+  mutateJson(join(fixtureRoot, 'package.json'), (manifest) => {
+    manifest.scripts.test =
+      'pnpm --filter @experiencequality/rest-client --filter @experiencequality/test-infra --workspace-concurrency=1 run test';
+  });
+
+  assert.throws(verifyFixture(fixtureRoot), /must include @experiencequality\/mcp-server/);
 });
 
 test('rejects a package manifest with the wrong repository metadata', (t) => {

@@ -33,6 +33,7 @@ const expectedDependencies = new Map([
     ],
   ],
   ['test-infra', []],
+  ['mcp-server', []],
 ]);
 
 export function discoverWorkspaces(workspaceRoot = root) {
@@ -271,6 +272,34 @@ export function verifyStructure({
   assert(
     rootPackage.scripts?.test?.includes('--filter @experiencequality/test-infra'),
     'root test script must include @experiencequality/test-infra',
+  );
+
+  const mcp = readWorkspaceJson('packages/mcp-server');
+  assert(mcp.type === 'module', 'packages/mcp-server must be an ES module package');
+  assert(
+    mcp.bin?.['xq-mcp'] === './dist/bin/xq-mcp.js',
+    'packages/mcp-server must map xq-mcp to ./dist/bin/xq-mcp.js',
+  );
+  assert(mcp.scripts?.build === 'tsc -b', 'packages/mcp-server must build with tsc -b');
+  assert(
+    mcp.scripts?.check === 'tsc -p tsconfig.test.json --noEmit',
+    'packages/mcp-server must type-check tests with tsc -p tsconfig.test.json --noEmit',
+  );
+  assert(
+    mcp.scripts?.test === 'vitest run --config vitest.config.ts',
+    'packages/mcp-server must run vitest with its local config',
+  );
+  assert(
+    existsSync(resolve(workspaceRoot, 'packages/mcp-server/src/bin/xq-mcp.ts')),
+    'packages/mcp-server must own src/bin/xq-mcp.ts',
+  );
+  assert(
+    rootTsConfig.references?.some((reference) => reference.path === './packages/mcp-server'),
+    'root tsconfig.json must reference packages/mcp-server',
+  );
+  assert(
+    rootPackage.scripts?.test?.includes('--filter @experiencequality/mcp-server'),
+    'root test script must include @experiencequality/mcp-server',
   );
 
   for (const legacyRoot of ['src', 'test', 'demo']) {

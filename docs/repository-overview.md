@@ -8,12 +8,12 @@ XQ Platform is a private pnpm monorepo for reusable backend and browser testing 
 
 | Area          | Location                                     | Responsibility                                      |
 | ------------- | -------------------------------------------- | --------------------------------------------------- |
-| Product       | `packages/`                                  | Seven distributable Node packages                   |
+| Product       | `packages/`                                  | Eight distributable Node packages                   |
 | Verification  | Package tests, `apps/`, verification scripts | Prove source, archives, and consumer workflows work |
 | Automation    | `.github/workflows/`                         | Execute validation and coordinate distribution      |
 | Documentation | `docs/`, package READMEs                     | Consumer usage and maintainer decisions             |
 
-The root and apps are private. pnpm discovers `packages/*` and `apps/*`; root TypeScript project references build the seven product packages. Build output is package-local `dist/`.
+The root and apps are private. pnpm discovers `packages/*` and `apps/*`; root TypeScript project references build the eight product packages. Build output is package-local `dist/`. The approved publishable set is the allowlist in `scripts/publishable-packages.mjs`. Adding a package follows [onboarding-new-package.md](onboarding-new-package.md).
 
 ## Product boundaries
 
@@ -26,8 +26,9 @@ The root and apps are private. pnpm discovers `packages/*` and `apps/*`; root Ty
 | `test`                              | Backend facade with Vitest and optional Cucumber integration   |
 | `test-browser`                      | Playwright facade using the shared testing capabilities        |
 | `test-infra`                        | Compiled `xq-infra` CLI for Docker test environments           |
+| `mcp-server`                        | Compiled `xq-mcp` MCP stdio server CLI                         |
 
-`core` depends on `rest-client` and `stub`. Both test facades depend on `core`, `db`, `rest-client`, and `stub`. `test-infra` has no internal package dependencies: it supports environment setup rather than the facade runtime. `xq-infra` is its executable, not another package.
+`core` depends on `rest-client` and `stub`. Both test facades depend on `core`, `db`, `rest-client`, and `stub`. `test-infra` and `mcp-server` have no internal package dependencies: they ship CLIs rather than the facade runtime. `xq-infra` and `xq-mcp` are executables, not additional packages.
 
 ## Verification
 
@@ -35,7 +36,7 @@ The root and apps are private. pnpm discovers `packages/*` and `apps/*`; root Ty
 - Lint, formatting, types, and compilation check source consistency.
 - Package tests exercise individual packages.
 - Packed-consumer checks install archives into temporary consumers to detect problems hidden by workspace links.
-- `apps/backend-e2e`, `apps/browser-e2e`, and `apps/infra-e2e` are private consumer examples and E2E verification projects, not shipping applications.
+- `apps/backend-e2e`, `apps/browser-e2e`, `apps/infra-e2e`, and `apps/mcp-server-e2e` are private consumer examples and E2E verification projects, not shipping applications.
 
 Pull-request CI uses separate Build and Test workflows (hub `@v2`). Push to `main` runs Release: hub build and test, a per-package publish matrix (hub skips versions already in the registry), and a Cucumber report artifact for Pages. Hub `ci:test` covers packed-consumer checks, package tests, browser E2E, backend Docker E2E, real-Docker infra E2E, and Cucumber verification.
 
@@ -43,11 +44,11 @@ Pull-request CI uses separate Build and Test workflows (hub `@v2`). Push to `mai
 
 | Output               | Destination              | Trigger                                                                   |
 | -------------------- | ------------------------ | ------------------------------------------------------------------------- |
-| Seven Node packages  | GitHub Packages          | Manual version-bump PR; merge to `main` publishes unpublished versions    |
+| Eight Node packages  | GitHub Packages          | Manual version-bump PR; merge to `main` publishes unpublished versions    |
 | Cucumber HTML report | GitHub Pages             | Successful main Release run or manual report selection                    |
 | Agent skills         | GitHub skills publishing | Changes under `.agents/skills/` on main or manual dispatch                |
 
-The Node release path is: bump all seven package versions in a PR, merge to
+The Node release path is: bump all eight package versions in a PR, merge to
 `main`, then Release runs build, test, per-package hub publish (skip if already
 published), and registry verification. No new git tags and no new GitHub
 Releases. Frozen `CHANGELOG.md` files stay as history.
@@ -59,7 +60,7 @@ The architecture contract is [architecture/github-packages-release-spec.md](arch
 ```text
 Feature PR (no version change)
   -> merge to main (Release skips already-published versions)
-Bump PR sets the same version on all seven packages
+Bump PR sets the same version on all eight packages
   -> verify:versions passes on the PR
   -> merge bump PR to main
   -> Release build + test
@@ -67,7 +68,7 @@ Bump PR sets the same version on all seven packages
 ```
 
 Maintainers own version preparation. One Release workflow owns Node
-publication. All seven packages remain in one fixed-version group. A registry
+publication. All eight packages remain in one fixed-version group. A registry
 failure must not be silently treated as an unpublished version. Recovery is
 **Re-run failed jobs**; published versions are never overwritten.
 
