@@ -1,6 +1,4 @@
 import { readdir } from 'node:fs/promises'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import type { XQToolProvider } from './type.js'
 
 const PROVIDERS_URL = new URL('./tools/', import.meta.url)

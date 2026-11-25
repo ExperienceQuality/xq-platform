@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { McpServer } from '@modelcontextprotocol/server'
 
 export const HANDLER_OUTPUT_SCHEMA = z.object({
   instruction: z.string().describe('The instruction that hint LLM to do next'),
