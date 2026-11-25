@@ -37,7 +37,7 @@ The approved publishable set is maintained in
 5. `@experiencequality/test`
 6. `@experiencequality/test-browser`
 7. `@experiencequality/test-infra`
-8. `@experiencequality/mcp-server`
+8. `@experiencequality/xq-mcp`
 
 All eight versions must remain the same `MAJOR.MINOR.PATCH` value. Their
 `publishConfig` points to `https://npm.pkg.github.com`, and publication uses
@@ -93,7 +93,7 @@ or `/docs` source should be selected.
 
 All eight packages require Node.js 24 or newer. Vitest 4 or newer applies to
 the `test` Vitest adapter; `test-browser` requires its Playwright peer
-(`@playwright/test >=1.64 <2`). The compiled `test-infra` and `mcp-server`
+(`@playwright/test >=1.64 <2`). The compiled `test-infra` and `xq-mcp`
 CLIs have no TypeScript or Vitest runtime requirement. The optional Cucumber
 peer range is `>=13.2.1 <14`.
 

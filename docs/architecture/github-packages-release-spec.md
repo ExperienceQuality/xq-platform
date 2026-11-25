@@ -39,7 +39,7 @@ xq-platform/
 │   ├── backend-e2e/
 │   ├── browser-e2e/
 │   ├── infra-e2e/
-│   └── mcp-server-e2e/
+│   └── xq-mcp-e2e/
 ├── packages/
 │   ├── rest-client/
 │   ├── db/
@@ -48,7 +48,7 @@ xq-platform/
 │   ├── test/
 │   ├── test-browser/
 │   ├── test-infra/
-│   └── mcp-server/
+│   └── xq-mcp/
 ├── scripts/
 ├── .github/workflows/
 ├── docs/
@@ -79,9 +79,9 @@ All publishable packages use the organization scope and lowercase kebab-case:
 5. `@experiencequality/test`
 6. `@experiencequality/test-browser`
 7. `@experiencequality/test-infra`
-8. `@experiencequality/mcp-server`
+8. `@experiencequality/xq-mcp`
 
-`xq-infra` and `xq-mcp` are executables provided by `test-infra` and `mcp-server`, not additional packages. The canonical inventory lives in `scripts/publishable-packages.mjs`; adding a publishable package requires updating that inventory, the Release publish matrix, the package-boundary map, and the repository documentation (see [onboarding-new-package.md](../onboarding-new-package.md)).
+`xq-infra` and `xq-mcp` are executables provided by `test-infra` and `xq-mcp`, not additional packages. The canonical inventory lives in `scripts/publishable-packages.mjs`; adding a publishable package requires updating that inventory, the Release publish matrix, the package-boundary map, and the repository documentation (see [onboarding-new-package.md](../onboarding-new-package.md)).
 
 ## 5. Lockstep versioning
 
@@ -110,7 +110,7 @@ Every publishable package must have:
 - Internal dependencies expressed as `workspace:*` in source manifests.
 - A `repository.url` pointing to `ExperienceQuality/xq-platform` and a `repository.directory` matching its package path.
 
-Packed artifacts must contain ordinary aligned dependency versions and no unresolved `workspace:` references. `test-infra` and `mcp-server` intentionally ship only compiled CLIs (`xq-infra`, `xq-mcp`); they do not expose a public module entrypoint.
+Packed artifacts must contain ordinary aligned dependency versions and no unresolved `workspace:` references. `test-infra` and `xq-mcp` intentionally ship only compiled CLIs (`xq-infra`, `xq-mcp`); they do not expose a public module entrypoint.
 
 ## 7. Authentication
 
@@ -158,7 +158,7 @@ Consumers install explicit platform versions and keep all `@experiencequality/*`
     "@experiencequality/test": "1.0.6",
     "@experiencequality/test-browser": "1.0.6",
     "@experiencequality/test-infra": "1.0.6",
-    "@experiencequality/mcp-server": "1.0.6"
+    "@experiencequality/xq-mcp": "1.0.6"
   }
 }
 ```

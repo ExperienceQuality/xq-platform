@@ -34,7 +34,7 @@ The internal release packages are:
 - `@experiencequality/test`
 - `@experiencequality/test-browser`
 - `@experiencequality/test-infra`
-- `@experiencequality/mcp-server`
+- `@experiencequality/xq-mcp`
 
 The root workspace and `apps/` remain private. The eight publishable packages
 stay in one fixed `MAJOR.MINOR.PATCH` group. Maintainers bump all eight

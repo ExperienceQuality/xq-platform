@@ -1,10 +1,10 @@
 {
-  "name": "@experiencequality/mcp-server",
+  "name": "@experiencequality/xq-mcp",
   "version": "1.0.6",
   "repository": {
     "type": "git",
     "url": "https://github.com/ExperienceQuality/xq-platform.git",
-    "directory": "packages/mcp-server"
+    "directory": "packages/xq-mcp"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
@@ -14,6 +14,7 @@
     "xq-mcp": "./dist/bin/xq-mcp.js"
   },
   "scripts": {
+    "main": "tsx main.ts",
     "build": "tsc -b",
     "ci:publish": "pnpm run build && pnpm publish --no-git-checks",
     "check": "tsc -p tsconfig.test.json --noEmit",
@@ -30,5 +31,8 @@
   "dependencies": {
     "@modelcontextprotocol/server": "2.4.0",
     "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6"
   }
 }

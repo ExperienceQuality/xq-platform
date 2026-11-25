@@ -16,7 +16,7 @@ focused documents:
 | Node test package internals               | [packages/test/README.md](packages/test/README.md)                                                     |
 | Playwright browser test package           | [packages/test-browser/README.md](packages/test-browser/README.md)                                     |
 | Docker test-environment CLI               | [packages/test-infra/README.md](packages/test-infra/README.md)                                         |
-| MCP server CLI                            | [packages/mcp-server/README.md](packages/mcp-server/README.md)                                         |
+| MCP server CLI                            | [packages/xq-mcp/README.md](packages/xq-mcp/README.md)                                             |
 | Release and repository policy             | [docs/release-policy.md](docs/release-policy.md)                                                       |
 | Repository organization                   | [docs/repository-overview.md](docs/repository-overview.md)                                             |
 | Package release architecture              | [docs/architecture/github-packages-release-spec.md](docs/architecture/github-packages-release-spec.md) |

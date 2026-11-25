@@ -1,5 +1,5 @@
 {
-  "name": "@experiencequality/showcase-mcp-server-e2e",
+  "name": "@experiencequality/showcase-xq-mcp-e2e",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "node": ">=24"
   },
   "dependencies": {
-    "@experiencequality/mcp-server": "workspace:*",
+    "@experiencequality/xq-mcp": "workspace:*",
     "@modelcontextprotocol/client": "2.4.0"
   },
   "devDependencies": {

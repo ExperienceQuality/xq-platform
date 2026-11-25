@@ -8,6 +8,6 @@
     { "path": "./packages/test" },
     { "path": "./packages/test-browser" },
     { "path": "./packages/test-infra" },
-    { "path": "./packages/mcp-server" }
+    { "path": "./packages/xq-mcp" }
   ]
 }

@@ -26,9 +26,9 @@ The root and apps are private. pnpm discovers `packages/*` and `apps/*`; root Ty
 | `test`                              | Backend facade with Vitest and optional Cucumber integration   |
 | `test-browser`                      | Playwright facade using the shared testing capabilities        |
 | `test-infra`                        | Compiled `xq-infra` CLI for Docker test environments           |
-| `mcp-server`                        | Compiled `xq-mcp` MCP stdio server CLI                         |
+| `xq-mcp`                          | Compiled `xq-mcp` MCP stdio server CLI                         |
 
-`core` depends on `rest-client` and `stub`. Both test facades depend on `core`, `db`, `rest-client`, and `stub`. `test-infra` and `mcp-server` have no internal package dependencies: they ship CLIs rather than the facade runtime. `xq-infra` and `xq-mcp` are executables, not additional packages.
+`core` depends on `rest-client` and `stub`. Both test facades depend on `core`, `db`, `rest-client`, and `stub`. `test-infra` and `xq-mcp` have no internal package dependencies: they ship CLIs rather than the facade runtime. `xq-infra` and `xq-mcp` are executables, not additional packages.
 
 ## Verification
 
@@ -36,7 +36,7 @@ The root and apps are private. pnpm discovers `packages/*` and `apps/*`; root Ty
 - Lint, formatting, types, and compilation check source consistency.
 - Package tests exercise individual packages.
 - Packed-consumer checks install archives into temporary consumers to detect problems hidden by workspace links.
-- `apps/backend-e2e`, `apps/browser-e2e`, `apps/infra-e2e`, and `apps/mcp-server-e2e` are private consumer examples and E2E verification projects, not shipping applications.
+- `apps/backend-e2e`, `apps/browser-e2e`, `apps/infra-e2e`, and `apps/xq-mcp-e2e` are private consumer examples and E2E verification projects, not shipping applications.
 
 Pull-request CI uses separate Build and Test workflows (hub `@v2`). Push to `main` runs Release: hub build and test, a per-package publish matrix (hub skips versions already in the registry), and a Cucumber report artifact for Pages. Hub `ci:test` covers packed-consumer checks, package tests, browser E2E, backend Docker E2E, real-Docker infra E2E, and Cucumber verification.
 

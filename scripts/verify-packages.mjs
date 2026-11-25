@@ -257,7 +257,7 @@ Then('response JSON at {string} contains:', async function (this: ResponseWorld,
     // CLI-only packages have no root module export; resolve their manifest instead.
     const specifier =
       packageName === '@experiencequality/test-infra' ||
-      packageName === '@experiencequality/mcp-server'
+      packageName === '@experiencequality/xq-mcp'
         ? `${packageName}/package.json`
         : packageName;
     run(

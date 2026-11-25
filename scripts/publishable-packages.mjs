@@ -6,7 +6,7 @@ export const publishablePackages = Object.freeze([
   'test',
   'test-browser',
   'test-infra',
-  'mcp-server',
+  'xq-mcp',
 ]);
 
 export const publishablePackageNames = Object.freeze(

@@ -33,7 +33,7 @@ const expectedDependencies = new Map([
     ],
   ],
   ['test-infra', []],
-  ['mcp-server', []],
+  ['xq-mcp', []],
 ]);
 
 export function discoverWorkspaces(workspaceRoot = root) {
@@ -274,32 +274,32 @@ export function verifyStructure({
     'root test script must include @experiencequality/test-infra',
   );
 
-  const mcp = readWorkspaceJson('packages/mcp-server');
-  assert(mcp.type === 'module', 'packages/mcp-server must be an ES module package');
+  const mcp = readWorkspaceJson('packages/xq-mcp');
+  assert(mcp.type === 'module', 'packages/xq-mcp must be an ES module package');
   assert(
     mcp.bin?.['xq-mcp'] === './dist/bin/xq-mcp.js',
-    'packages/mcp-server must map xq-mcp to ./dist/bin/xq-mcp.js',
+    'packages/xq-mcp must map xq-mcp to ./dist/bin/xq-mcp.js',
   );
-  assert(mcp.scripts?.build === 'tsc -b', 'packages/mcp-server must build with tsc -b');
+  assert(mcp.scripts?.build === 'tsc -b', 'packages/xq-mcp must build with tsc -b');
   assert(
     mcp.scripts?.check === 'tsc -p tsconfig.test.json --noEmit',
-    'packages/mcp-server must type-check tests with tsc -p tsconfig.test.json --noEmit',
+    'packages/xq-mcp must type-check tests with tsc -p tsconfig.test.json --noEmit',
   );
   assert(
     mcp.scripts?.test === 'vitest run --config vitest.config.ts',
-    'packages/mcp-server must run vitest with its local config',
+    'packages/xq-mcp must run vitest with its local config',
   );
   assert(
-    existsSync(resolve(workspaceRoot, 'packages/mcp-server/src/bin/xq-mcp.ts')),
-    'packages/mcp-server must own src/bin/xq-mcp.ts',
+    existsSync(resolve(workspaceRoot, 'packages/xq-mcp/src/bin/xq-mcp.ts')),
+    'packages/xq-mcp must own src/bin/xq-mcp.ts',
   );
   assert(
-    rootTsConfig.references?.some((reference) => reference.path === './packages/mcp-server'),
-    'root tsconfig.json must reference packages/mcp-server',
+    rootTsConfig.references?.some((reference) => reference.path === './packages/xq-mcp'),
+    'root tsconfig.json must reference packages/xq-mcp',
   );
   assert(
-    rootPackage.scripts?.test?.includes('--filter @experiencequality/mcp-server'),
-    'root test script must include @experiencequality/mcp-server',
+    rootPackage.scripts?.test?.includes('--filter @experiencequality/xq-mcp'),
+    'root test script must include @experiencequality/xq-mcp',
   );
 
   for (const legacyRoot of ['src', 'test', 'demo']) {
@@ -339,6 +339,7 @@ function findExtraLockfiles(workspaceRoot) {
     (path) =>
       !path.includes(`${sep}node_modules${sep}`) &&
       !path.includes(`${sep}.git${sep}`) &&
+      !path.includes(`${sep}.squad${sep}`) &&
       ['package-lock.json', 'npm-shrinkwrap.json', 'yarn.lock', 'pnpm-lock.yaml'].includes(
         path.split(sep).at(-1),
       ) &&

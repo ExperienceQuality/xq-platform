@@ -1,4 +1,4 @@
-# @experiencequality/mcp-server
+# @experiencequality/xq-mcp
 
 ## 1.0.6
 
